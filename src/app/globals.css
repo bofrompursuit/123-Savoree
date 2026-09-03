@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fffdf7;
+  --foreground: #1c2b22;
+
+  --savoree-green: #10b981;
+  --savoree-green-bright: #2ecc71;
+  --savoree-green-dark: #0d9467;
+  --savoree-lime: #c6f135;
+  --savoree-lime-dark: #a3d400;
+  --savoree-cream: #fffdf7;
+  --savoree-sand: #fff4e0;
+  --savoree-ink: #1c2b22;
+  --savoree-amber: #ffb020;
+  --savoree-coral: #ff6b5c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-savoree-green: var(--savoree-green);
+  --color-savoree-green-bright: var(--savoree-green-bright);
+  --color-savoree-green-dark: var(--savoree-green-dark);
+  --color-savoree-lime: var(--savoree-lime);
+  --color-savoree-lime-dark: var(--savoree-lime-dark);
+  --color-savoree-cream: var(--savoree-cream);
+  --color-savoree-sand: var(--savoree-sand);
+  --color-savoree-ink: var(--savoree-ink);
+  --color-savoree-amber: var(--savoree-amber);
+  --color-savoree-coral: var(--savoree-coral);
+
+  --font-display: var(--font-fredoka);
+  --font-sans: var(--font-nunito);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Hide scrollbar for the recipe carousel while keeping it scrollable */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes savoree-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-savoree-marquee {
+  animation: savoree-marquee 48s linear infinite;
+}
+
+@keyframes savoree-marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-savoree-marquee-reverse {
+  animation: savoree-marquee-reverse 48s linear infinite;
+}
+
+@keyframes savoree-bubble-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+  10%,
+  85% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.95);
+  }
+}
+
+.animate-savoree-bubble {
+  animation: savoree-bubble-pop 4s ease-in-out forwards;
+}
