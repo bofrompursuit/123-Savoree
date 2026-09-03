@@ -83,7 +83,7 @@ export const communityPosts: CommunityPost[] = [
 ];
 
 export const categoryColors: Record<CommunityPost["category"], string> = {
-  "Quick Recipe": "bg-savoree-green/10 text-savoree-green-dark",
+  "Quick Recipe": "bg-savoree-blue/10 text-savoree-navy",
   "15-Second Skill": "bg-savoree-amber/15 text-amber-700",
   "Kitchen Safety": "bg-savoree-coral/10 text-red-600",
   "Food Challenge": "bg-purple-100 text-purple-700",

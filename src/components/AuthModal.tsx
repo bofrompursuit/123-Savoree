@@ -44,7 +44,7 @@ export default function AuthModal({
           <button
             type="button"
             onClick={handleClose}
-            className="mt-2 rounded-full bg-savoree-lime px-6 py-2.5 font-semibold text-savoree-ink transition hover:bg-savoree-lime-dark"
+            className="mt-2 rounded-full bg-savoree-neon px-6 py-2.5 font-semibold text-savoree-ink transition hover:bg-savoree-neon-dark"
           >
             Let&apos;s cook!
           </button>
@@ -69,7 +69,7 @@ export default function AuthModal({
               onClick={() => setMode("signup")}
               className={`flex-1 rounded-full py-2 text-sm font-bold transition ${
                 mode === "signup"
-                  ? "bg-savoree-lime text-savoree-ink shadow"
+                  ? "bg-savoree-neon text-savoree-ink shadow"
                   : "text-savoree-ink/60"
               }`}
             >
@@ -80,7 +80,7 @@ export default function AuthModal({
               onClick={() => setMode("signin")}
               className={`flex-1 rounded-full py-2 text-sm font-bold transition ${
                 mode === "signin"
-                  ? "bg-savoree-lime text-savoree-ink shadow"
+                  ? "bg-savoree-neon text-savoree-ink shadow"
                   : "text-savoree-ink/60"
               }`}
             >
@@ -97,7 +97,7 @@ export default function AuthModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-green"
+                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-blue"
               />
             </label>
             <label className="flex flex-col gap-1.5">
@@ -110,12 +110,12 @@ export default function AuthModal({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="(555) 123-4567"
-                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-green"
+                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-blue"
               />
             </label>
             <button
               type="submit"
-              className="mt-2 rounded-full bg-savoree-lime px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-lime/30 transition hover:bg-savoree-lime-dark"
+              className="mt-2 rounded-full bg-savoree-neon px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark"
             >
               {mode === "signup" ? "Create Account" : "Sign In"}
             </button>

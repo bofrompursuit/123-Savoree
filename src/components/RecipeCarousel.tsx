@@ -14,7 +14,7 @@ export default function RecipeCarousel() {
     <section id="recipes" className="bg-savoree-cream px-4 py-16 sm:px-6 sm:py-24">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 text-center sm:mb-10">
-          <span className="text-sm font-bold uppercase tracking-wide text-savoree-green-dark">
+          <span className="text-sm font-bold uppercase tracking-wide text-savoree-navy">
             Recipe Templates
           </span>
           <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl">

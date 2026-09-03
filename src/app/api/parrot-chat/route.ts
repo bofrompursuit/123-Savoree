@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { anthropic } from "@/lib/anthropic";
-
-const GUARDRAIL_REPLY = "Be sure to ask Mom or Dad for help with that! 🦜";
+import { anthropic, isAnthropicConfigured } from "@/lib/anthropic";
+import { GUARDRAIL_REPLY, getFallbackChatReply } from "@/lib/fallbackChat";
 
 const SYSTEM_PROMPT = `You are Pollee, the friendly parrot mascot chat assistant inside 123 Savoree, a cooking app for kids and beginner cooks. You talk in a cheerful, encouraging, kid-friendly voice and occasionally use a parrot-themed word like "squawk!" or "pollee wants a snack!" sparingly.
 
@@ -27,6 +26,13 @@ export async function POST(request: Request) {
   const message = body.message?.trim();
   if (!message) {
     return NextResponse.json({ error: "Missing 'message'" }, { status: 400 });
+  }
+
+  // No API key yet — answer with the rule-based fallback (same guardrail
+  // behavior) instead of erroring out. Swaps to real Claude replies
+  // automatically once ANTHROPIC_API_KEY is set.
+  if (!isAnthropicConfigured()) {
+    return NextResponse.json({ reply: getFallbackChatReply(message) });
   }
 
   const history = (body.history ?? []).slice(-6).map((turn) => ({

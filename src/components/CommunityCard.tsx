@@ -14,7 +14,7 @@ export default function CommunityCard({ post }: { post: CommunityPost }) {
           className="object-cover"
         />
         {post.approved && (
-          <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-savoree-green-dark shadow">
+          <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-savoree-navy shadow">
             ✓ Admin Reviewed &amp; Approved
           </span>
         )}

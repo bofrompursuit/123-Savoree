@@ -27,7 +27,7 @@ export default function RecipeCard({
         </span>
       </div>
       <div className="p-4">
-        <p className="text-xs font-bold uppercase tracking-wide text-savoree-green-dark">
+        <p className="text-xs font-bold uppercase tracking-wide text-savoree-navy">
           {recipe.country}
         </p>
         <h3 className="mt-0.5 font-display text-lg font-semibold text-savoree-ink">

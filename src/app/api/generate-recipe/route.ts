@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { anthropic } from "@/lib/anthropic";
+import { anthropic, isAnthropicConfigured } from "@/lib/anthropic";
+import { getFallbackRecipe } from "@/lib/fallbackRecipes";
 
 const RECIPE_SCHEMA = {
   type: "object",
@@ -47,6 +48,13 @@ export async function POST(request: Request) {
   const query = body.query?.trim();
   if (!query) {
     return NextResponse.json({ error: "Missing 'query'" }, { status: 400 });
+  }
+
+  // No API key yet — serve a real recipe from the built-in library instead
+  // of erroring out. Swaps to Claude-generated recipes automatically once
+  // ANTHROPIC_API_KEY is set.
+  if (!isAnthropicConfigured()) {
+    return NextResponse.json({ recipe: getFallbackRecipe(query) });
   }
 
   try {

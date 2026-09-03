@@ -66,10 +66,10 @@ export default function SignUpGate({
 
       <div className="relative flex w-full max-w-md flex-col items-center rounded-3xl bg-white/95 p-8 text-center shadow-2xl backdrop-blur">
         <div className="flex items-center gap-2">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-savoree-green text-xl font-bold text-white">
+          <ParrotFaceIcon className="h-12 w-12" />
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-savoree-blue text-xl font-bold text-white">
             123
           </span>
-          <ParrotFaceIcon className="h-12 w-12" />
         </div>
         <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight text-savoree-ink sm:text-4xl">
           123 Savoree
@@ -87,14 +87,14 @@ export default function SignUpGate({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             aria-label="Email address"
-            className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3.5 text-base text-savoree-ink outline-none transition focus:border-savoree-lime-dark"
+            className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3.5 text-base text-savoree-ink outline-none transition focus:border-savoree-neon-dark"
           />
           <button
             type="submit"
             disabled={status === "loading"}
-            className="rounded-full bg-savoree-lime px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-lime/30 transition hover:bg-savoree-lime-dark disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-full bg-savoree-neon px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {status === "loading" ? "Unlocking..." : "Enter the Kitchen"}
+            {status === "loading" ? "Signing in..." : "Sign In"}
           </button>
         </form>
 

@@ -50,7 +50,7 @@ export default function SubmissionModal({
           <button
             type="button"
             onClick={handleClose}
-            className="mt-2 rounded-full bg-savoree-lime px-6 py-2.5 font-semibold text-savoree-ink transition hover:bg-savoree-lime-dark"
+            className="mt-2 rounded-full bg-savoree-neon px-6 py-2.5 font-semibold text-savoree-ink transition hover:bg-savoree-neon-dark"
           >
             Done
           </button>
@@ -85,7 +85,7 @@ export default function SubmissionModal({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. My 3-Step Fruit Salad"
-                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-green"
+                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-blue"
               />
             </label>
 
@@ -101,7 +101,7 @@ export default function SubmissionModal({
                     onClick={() => setCategory(c)}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
                       category === c
-                        ? "bg-savoree-lime text-savoree-ink"
+                        ? "bg-savoree-neon text-savoree-ink"
                         : "bg-savoree-sand text-savoree-ink/70"
                     }`}
                   >
@@ -118,13 +118,13 @@ export default function SubmissionModal({
               <input
                 type="file"
                 accept="image/*,video/*"
-                className="rounded-2xl border-2 border-dashed border-savoree-green-dark/20 bg-white px-4 py-6 text-sm text-savoree-ink/50 outline-none file:mr-3 file:rounded-full file:border-0 file:bg-savoree-lime file:px-3.5 file:py-1.5 file:text-xs file:font-bold file:text-savoree-ink"
+                className="rounded-2xl border-2 border-dashed border-savoree-navy/20 bg-white px-4 py-6 text-sm text-savoree-ink/50 outline-none file:mr-3 file:rounded-full file:border-0 file:bg-savoree-neon file:px-3.5 file:py-1.5 file:text-xs file:font-bold file:text-savoree-ink"
               />
             </label>
 
             <button
               type="submit"
-              className="mt-2 rounded-full bg-savoree-lime px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-lime/30 transition hover:bg-savoree-lime-dark"
+              className="mt-2 rounded-full bg-savoree-neon px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark"
             >
               Submit for Review
             </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ParrotIcon from "./ParrotIcon";
+import ParrotFaceIcon from "./ParrotFaceIcon";
 import {
   isSpeechSynthesisSupported,
   speakAsParrot,
@@ -90,9 +90,9 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-x-4 bottom-24 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-28 sm:right-6 sm:w-96">
-      <div className="flex items-center justify-between gap-2 bg-savoree-green px-4 py-3">
+      <div className="flex items-center justify-between gap-2 bg-savoree-blue px-4 py-3">
         <div className="flex items-center gap-2">
-          <ParrotIcon className="h-8 w-8" />
+          <ParrotFaceIcon className="h-8 w-8" />
           <span className="font-display text-base font-semibold text-white">
             Pollee
           </span>
@@ -135,7 +135,7 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
             className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm ${
               turn.role === "assistant"
                 ? "self-start bg-savoree-sand text-savoree-ink"
-                : "self-end bg-savoree-lime text-savoree-ink"
+                : "self-end bg-savoree-neon text-savoree-ink"
             }`}
           >
             {turn.text}
@@ -157,7 +157,7 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={listening ? "Listening..." : "Ask Pollee a cooking question..."}
-          className="flex-1 rounded-full border-2 border-savoree-ink/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-savoree-lime-dark"
+          className="flex-1 rounded-full border-2 border-savoree-ink/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-savoree-neon-dark"
         />
         {voiceInputSupported && (
           <button
@@ -178,7 +178,7 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
           type="submit"
           disabled={loading || !input.trim()}
           aria-label="Send"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-savoree-lime text-savoree-ink transition hover:bg-savoree-lime-dark disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-savoree-neon text-savoree-ink transition hover:bg-savoree-neon-dark disabled:cursor-not-allowed disabled:opacity-50"
         >
           ➤
         </button>

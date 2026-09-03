@@ -26,7 +26,7 @@ export default function RecipeModal({
           </div>
 
           <div className="mt-5">
-            <span className="text-sm font-bold text-savoree-green-dark">
+            <span className="text-sm font-bold text-savoree-navy">
               {recipe.flag} {recipe.country}
             </span>
             <h2
@@ -47,7 +47,7 @@ export default function RecipeModal({
                   key={ingredient}
                   className="flex items-start gap-2 text-sm text-savoree-ink/80"
                 >
-                  <span className="mt-0.5 text-savoree-green">●</span>
+                  <span className="mt-0.5 text-savoree-blue">●</span>
                   {ingredient}
                 </li>
               ))}
@@ -64,7 +64,7 @@ export default function RecipeModal({
                   key={step.title}
                   className="flex gap-3 rounded-2xl bg-savoree-sand/60 p-3.5"
                 >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-savoree-green font-display text-sm font-bold text-white">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-savoree-blue font-display text-sm font-bold text-white">
                     {index + 1}
                   </span>
                   <div>

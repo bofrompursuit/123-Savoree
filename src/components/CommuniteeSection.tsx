@@ -42,7 +42,7 @@ export default function CommuniteeSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
           <div>
-            <span className="text-sm font-bold uppercase tracking-wide text-savoree-green-dark">
+            <span className="text-sm font-bold uppercase tracking-wide text-savoree-navy">
               Communitee
             </span>
             <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -56,7 +56,7 @@ export default function CommuniteeSection() {
           <button
             type="button"
             onClick={() => setSubmissionOpen(true)}
-            className="shrink-0 rounded-full bg-savoree-lime px-6 py-3 text-sm font-bold text-savoree-ink shadow-md shadow-savoree-lime/30 transition hover:bg-savoree-lime-dark"
+            className="shrink-0 rounded-full bg-savoree-neon px-6 py-3 text-sm font-bold text-savoree-ink shadow-md shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark"
           >
             + Share Your Win
           </button>

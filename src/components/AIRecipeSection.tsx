@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSpeechToText } from "@/lib/useSpeechToText";
+import ParrotIcon from "./ParrotIcon";
 
 type StepResult = { title: string; instruction: string };
 type RecipeResult = {
@@ -90,7 +91,8 @@ export default function AIRecipeSection() {
 
       <div className="relative mx-auto max-w-3xl">
         <div className="text-center">
-          <span className="text-sm font-bold uppercase tracking-wide text-savoree-green-dark">
+          <ParrotIcon className="animate-savoree-mascot-bob mx-auto mb-2 h-16 w-16" />
+          <span className="text-sm font-bold uppercase tracking-wide text-savoree-navy">
             AI Recipe Helper
           </span>
           <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -132,7 +134,7 @@ export default function AIRecipeSection() {
             <button
               type="submit"
               disabled={loading || !query.trim()}
-              className="flex-1 rounded-full bg-savoree-lime px-6 py-3 text-sm font-bold text-savoree-ink shadow-md shadow-savoree-lime/30 transition hover:bg-savoree-lime-dark disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+              className="flex-1 rounded-full bg-savoree-neon px-6 py-3 text-sm font-bold text-savoree-ink shadow-md shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
             >
               {loading ? "Cooking it up..." : "Generate Recipe"}
             </button>
@@ -161,7 +163,7 @@ export default function AIRecipeSection() {
                     key={item}
                     className="flex items-start gap-2 text-sm text-savoree-ink/80"
                   >
-                    <span className="mt-0.5 text-savoree-green">●</span>
+                    <span className="mt-0.5 text-savoree-blue">●</span>
                     {item}
                   </li>
                 ))}
@@ -178,7 +180,7 @@ export default function AIRecipeSection() {
                     key={step.title}
                     className="flex gap-3 rounded-2xl bg-savoree-sand/60 p-3.5"
                   >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-savoree-green font-display text-sm font-bold text-white">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-savoree-blue font-display text-sm font-bold text-white">
                       {index + 1}
                     </span>
                     <div>
@@ -222,7 +224,7 @@ export default function AIRecipeSection() {
                       value={guardianPhone}
                       onChange={(e) => setGuardianPhone(e.target.value)}
                       placeholder="Parent's phone number"
-                      className="flex-1 rounded-full border-2 border-savoree-ink/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-savoree-green"
+                      className="flex-1 rounded-full border-2 border-savoree-ink/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-savoree-blue"
                     />
                     <button
                       type="submit"

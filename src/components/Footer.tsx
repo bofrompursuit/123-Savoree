@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-savoree-green-bright text-sm font-bold text-white">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-savoree-blue-bright text-sm font-bold text-white">
                 123
               </span>
               <span className="font-display text-xl font-semibold">

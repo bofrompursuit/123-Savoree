@@ -38,7 +38,7 @@ export default function AudioPlayer() {
         type="button"
         onClick={togglePlay}
         aria-label={playing ? "Pause music" : "Play music"}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-savoree-lime text-savoree-ink transition hover:brightness-110"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-savoree-neon text-savoree-ink transition hover:brightness-110"
       >
         {playing ? "⏸" : "▶"}
       </button>
@@ -53,7 +53,7 @@ export default function AudioPlayer() {
         value={volume}
         onChange={handleVolume}
         aria-label="Volume"
-        className="ml-1 h-1.5 w-20 cursor-pointer accent-savoree-lime"
+        className="ml-1 h-1.5 w-20 cursor-pointer accent-savoree-neon"
       />
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ParrotIcon from "./ParrotIcon";
+import ParrotFaceIcon from "./ParrotFaceIcon";
 import ParrotChat from "./ParrotChat";
 
 const IDLE_MESSAGES = [
@@ -55,9 +55,9 @@ export default function ParrotMascot({ landing = false }: { landing?: boolean })
         type="button"
         onClick={() => setChatOpen((v) => !v)}
         aria-label={chatOpen ? "Close Pollee the parrot chat" : "Chat with Pollee the parrot"}
-        className="fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-savoree-lime shadow-xl shadow-savoree-lime/40 transition hover:-translate-y-1 hover:brightness-105 sm:bottom-8 sm:right-8"
+        className="fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-savoree-neon shadow-xl shadow-savoree-neon/40 transition hover:-translate-y-1 hover:brightness-105 sm:bottom-8 sm:right-8"
       >
-        <ParrotIcon className="h-11 w-11" />
+        <ParrotFaceIcon className="h-11 w-11" />
       </button>
 
       {chatOpen && <ParrotChat onClose={() => setChatOpen(false)} />}

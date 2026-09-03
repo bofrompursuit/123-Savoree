@@ -35,7 +35,7 @@ export default function VenmoQR() {
           href={VENMO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block text-sm font-bold text-savoree-green-bright hover:underline"
+          className="mt-2 inline-block text-sm font-bold text-savoree-blue-bright hover:underline"
         >
           @{VENMO_USERNAME}
         </a>

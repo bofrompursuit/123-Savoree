@@ -2,7 +2,7 @@
 
 **Delicious things come in 3's.**
 
-A mobile/iPad-first cooking app for kids, teenagers, and beginner cooks. Bright, kid-friendly design (Seamless-style layout, green accent) with 3-step recipes, an AI recipe generator, and a moderated community feed.
+A mobile/iPad-first cooking app for kids, teenagers, and beginner cooks. Bright, kid-friendly design (Seamless-style layout, neon blue + navy accent) with 3-step recipes, an AI recipe generator, and a moderated community feed.
 
 ## Stack
 
@@ -27,7 +27,16 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Where it's used | Notes |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | `src/app/api/generate-recipe/route.ts`, `src/app/api/parrot-chat/route.ts` | Server-side only, read via `@anthropic-ai/sdk`'s default `Anthropic()` client. Never exposed to the browser. `.env.local` is gitignored. |
+| `ANTHROPIC_API_KEY` | `src/app/api/generate-recipe/route.ts`, `src/app/api/parrot-chat/route.ts` | Server-side only, read via `@anthropic-ai/sdk`'s default `Anthropic()` client. Never exposed to the browser. `.env.local` is gitignored. **If left as the placeholder, both routes automatically use the free, no-key fallback below instead of erroring.** |
+
+#### Fallback mode (no API key needed)
+
+Until a real `ANTHROPIC_API_KEY` is set, `isAnthropicConfigured()` (`src/lib/anthropic.ts`) returns `false` and both AI routes serve from a built-in library instead of calling Claude — no cost, no signup, works immediately:
+
+- **`generate-recipe`** matches the query against `src/lib/fallbackRecipes.ts` (~20 common kid recipes — pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else.
+- **`parrot-chat`** uses `src/lib/fallbackChat.ts`: a keyword-based guardrail (identical trigger words/behavior to the real prompt) plus food-specific answers pulled from the same recipe library.
+
+Both switch to real Claude-generated responses automatically the moment a real key is added — no other code changes needed.
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` | From your Supabase project's **Settings → API**. Both are safe to expose to the browser — the anon key can only do what your Row Level Security policies allow. **If these are left unset, the sign-up gate still works** (it unlocks the app locally without persisting the email) so the rest of the app is testable before you've created a Supabase project. |
 
 #### Setting up the `signups` table
@@ -92,10 +101,13 @@ src/
 
 | Token | Value |
 |---|---|
-| Primary accent | `#10B981` (`savoree-green`) |
-| Bright accent | `#2ECC71` (`savoree-green-bright`) |
+| Primary CTA (neon blue) | `#00C2FF` (`savoree-neon`) |
+| Accent blue | `#2563EB` (`savoree-blue`) |
+| Bright accent | `#38BDF8` (`savoree-blue-bright`) |
+| Dark navy (text/borders/footer) | `#0B1F3A` (`savoree-navy`) |
+| Ink (body text) | `#0B1424` (`savoree-ink`) |
 | Background | `#FFFDF7` (`savoree-cream`) |
-| Secondary surface | `#FFF4E0` (`savoree-sand`) |
+| Secondary surface | `#EEF4FF` (`savoree-sand`) |
 | Display font | [Fredoka](https://fonts.google.com/specimen/Fredoka) — bold, rounded, kid-friendly |
 | Body font | [Nunito](https://fonts.google.com/specimen/Nunito) |
 
@@ -114,7 +126,7 @@ Use this to mirror the app's breakpoints in Figma with Auto Layout, so design an
 
 ### 2. Set up styles first (so frames can reference them)
 
-1. Open the **Local variables** panel (or Styles) and create color variables matching the design tokens above: `savoree/green` (`#10B981`), `savoree/green-bright` (`#2ECC71`), `savoree/cream` (`#FFFDF7`), `savoree/sand` (`#FFF4E0`), `savoree/ink` (`#1C2B22`), `savoree/amber` (`#FFB020`), `savoree/coral` (`#FF6B5C`).
+1. Open the **Local variables** panel (or Styles) and create color variables matching the design tokens above: `savoree/neon` (`#00C2FF`), `savoree/blue` (`#2563EB`), `savoree/blue-bright` (`#38BDF8`), `savoree/navy` (`#0B1F3A`), `savoree/cream` (`#FFFDF7`), `savoree/sand` (`#EEF4FF`), `savoree/ink` (`#0B1424`), `savoree/amber` (`#FFB020`), `savoree/coral` (`#FF6B5C`).
 2. Install **Fredoka** and **Nunito** (Figma → Text → Fonts, search Google Fonts) and create text styles: `Display/H1` (Fredoka SemiBold, 40–56px), `Display/H2` (Fredoka SemiBold, 28–32px), `Body/Regular` (Nunito Regular, 16px), `Body/Bold` (Nunito ExtraBold, 14px).
 
 ### 3. Create the three frames

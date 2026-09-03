@@ -2,16 +2,16 @@
 
 :root {
   --background: #fffdf7;
-  --foreground: #1c2b22;
+  --foreground: #0b1424;
 
-  --savoree-green: #10b981;
-  --savoree-green-bright: #2ecc71;
-  --savoree-green-dark: #0d9467;
-  --savoree-lime: #c6f135;
-  --savoree-lime-dark: #a3d400;
+  --savoree-blue: #2563eb;
+  --savoree-blue-bright: #38bdf8;
+  --savoree-navy: #0b1f3a;
+  --savoree-neon: #00c2ff;
+  --savoree-neon-dark: #00a0d6;
   --savoree-cream: #fffdf7;
-  --savoree-sand: #fff4e0;
-  --savoree-ink: #1c2b22;
+  --savoree-sand: #eef4ff;
+  --savoree-ink: #0b1424;
   --savoree-amber: #ffb020;
   --savoree-coral: #ff6b5c;
 }
@@ -20,11 +20,11 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-savoree-green: var(--savoree-green);
-  --color-savoree-green-bright: var(--savoree-green-bright);
-  --color-savoree-green-dark: var(--savoree-green-dark);
-  --color-savoree-lime: var(--savoree-lime);
-  --color-savoree-lime-dark: var(--savoree-lime-dark);
+  --color-savoree-blue: var(--savoree-blue);
+  --color-savoree-blue-bright: var(--savoree-blue-bright);
+  --color-savoree-navy: var(--savoree-navy);
+  --color-savoree-neon: var(--savoree-neon);
+  --color-savoree-neon-dark: var(--savoree-neon-dark);
   --color-savoree-cream: var(--savoree-cream);
   --color-savoree-sand: var(--savoree-sand);
   --color-savoree-ink: var(--savoree-ink);
@@ -97,4 +97,36 @@ body {
 
 .animate-savoree-bubble {
   animation: savoree-bubble-pop 4s ease-in-out forwards;
+}
+
+@keyframes savoree-tail-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+}
+
+.animate-savoree-tail-wiggle {
+  transform-origin: 50px 62px;
+  animation: savoree-tail-wiggle 1.6s ease-in-out infinite;
+}
+
+@keyframes savoree-mascot-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
+}
+
+.animate-savoree-mascot-bob {
+  animation: savoree-mascot-bob 2.4s ease-in-out infinite;
 }

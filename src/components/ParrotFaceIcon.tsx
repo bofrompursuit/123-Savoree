@@ -7,7 +7,7 @@ export default function ParrotFaceIcon({ className }: { className?: string }) {
       aria-label="Pollee the parrot"
     >
       {/* head */}
-      <circle cx="32" cy="34" r="26" fill="#2ecc71" />
+      <circle cx="32" cy="34" r="26" fill="#7EC8E8" />
 
       {/* feather crest */}
       <path
@@ -20,7 +20,7 @@ export default function ParrotFaceIcon({ className }: { className?: string }) {
 
       {/* eye */}
       <circle cx="36" cy="30" r="10" fill="white" />
-      <circle cx="38.5" cy="30" r="5.5" fill="#1c2b22" />
+      <circle cx="38.5" cy="30" r="5.5" fill="#0B1424" />
       <circle cx="40.5" cy="27.5" r="1.6" fill="white" />
 
       {/* beak */}
@@ -28,7 +28,7 @@ export default function ParrotFaceIcon({ className }: { className?: string }) {
         d="M45 33 C 60 34, 60 46, 46 49 C 40 44, 39 37, 45 33 Z"
         fill="#ffb020"
       />
-      <path d="M45 41 C 50 41.5, 53 43, 53 44.5" stroke="#0d9467" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
+      <path d="M45 41 C 50 41.5, 53 43, 53 44.5" stroke="#2E93C2" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
     </svg>
   );
 }
