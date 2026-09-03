@@ -2,42 +2,60 @@
 
 **Delicious things come in 3's.**
 
-A mobile/iPad-first cooking app for kids, teenagers, and beginner cooks. Bright, kid-friendly design (Seamless-style layout, neon blue + navy accent) with 3-step recipes, an AI recipe generator, and a moderated community feed.
+A mobile/iPad-first cooking app for kids, teenagers, and beginner cooks. Bright, kid-friendly design (Seamless-style layout, neon blue + navy accent) with 3-step recipes, an AI-style recipe generator, and a moderated community feed.
+
+**Live at:** https://bofrompursuit.github.io/123-Savoree/ (auto-deployed from `main` via GitHub Actions — see [Deployment](#deployment)).
 
 ## Stack
 
-- **Next.js 16** (App Router, TypeScript, Turbopack)
+- **Next.js 16** (App Router, TypeScript, Turbopack), built as a **static export** (`output: "export"`) so it can be hosted on GitHub Pages with no server
 - **Tailwind CSS v4** (CSS-first theme in `src/app/globals.css`)
-- **@anthropic-ai/sdk** for the AI recipe generator and the Pollee parrot chat (`claude-opus-5`, structured/guardrailed output)
+- A built-in recipe/chat library (`src/lib/fallbackRecipes.ts`, `src/lib/fallbackChat.ts`) powers "...more One Two Three Recipee" and Pollee — no API key, no server, no cost (see [AI features](#ai-features-no-server-no-api-key))
 - **@supabase/supabase-js** for the sign-up gate's email capture
 - **qrcode** for the client-generated Venmo donation QR code
-- Web Speech API for voice input (no external dependency)
+- Web Speech API for voice input and Pollee's voice output (no external dependency)
 
 ## Getting Started
 
 ```bash
 npm install
-cp .env.local.example .env.local   # then fill in your real ANTHROPIC_API_KEY
+cp .env.local.example .env.local   # optional — only needed for Supabase, see below
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
+To preview the actual static export (what GitHub Pages serves) locally:
+
+```bash
+npm run build   # writes the static site to ./out
+npm start       # serves ./out at http://localhost:3000
+```
+
+## Deployment
+
+This repo deploys to **GitHub Pages** automatically on every push to `main` via `.github/workflows/deploy.yml`. No server, no API keys, and no manual deploy step required.
+
+Because GitHub Pages hosts project sites at `https://<user>.github.io/<repo>/`, `next.config.ts` sets `basePath`/`assetPrefix` to `/123-Savoree` — if you fork this repo under a different name, update `REPO_NAME` in `next.config.ts` to match, and update any raw `<video>`/`<audio src>` references that import `BASE_PATH` from `src/lib/basePath.ts` (next/image and next/link apply basePath automatically; plain HTML elements don't).
+
+The GitHub Pages source is set to "GitHub Actions" (not "Deploy from a branch") in the repo's Settings → Pages.
+
+### Wanting real Claude-generated responses instead of the built-in library?
+
+That needs a host that can run server code and keep an API key secret — GitHub Pages can't do either. Point a Next.js server deployment (Vercel, Netlify, Render, etc.) at this repo, reintroduce API routes under `src/app/api/` that call `@anthropic-ai/sdk`, and remove `output: "export"` from `next.config.ts`. The `src/lib/fallbackRecipes.ts` / `fallbackChat.ts` logic can stay as a graceful no-key fallback on that deployment too.
+
 ### Environment variables
 
 | Variable | Where it's used | Notes |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | `src/app/api/generate-recipe/route.ts`, `src/app/api/parrot-chat/route.ts` | Server-side only, read via `@anthropic-ai/sdk`'s default `Anthropic()` client. Never exposed to the browser. `.env.local` is gitignored. **If left as the placeholder, both routes automatically use the free, no-key fallback below instead of erroring.** |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` | From your Supabase project's **Settings → API**. Both are safe to expose to the browser — the anon key can only do what your Row Level Security policies allow, and this call already runs client-side (no server needed). **If these are left unset, the sign-up gate still works** (it unlocks the app locally without persisting the email) so the rest of the app is testable before you've created a Supabase project. |
 
-#### Fallback mode (no API key needed)
+### AI features (no server, no API key)
 
-Until a real `ANTHROPIC_API_KEY` is set, `isAnthropicConfigured()` (`src/lib/anthropic.ts`) returns `false` and both AI routes serve from a built-in library instead of calling Claude — no cost, no signup, works immediately:
+"...more One Two Three Recipee" and Pollee both run **entirely in the browser** via a small built-in library — this isn't a temporary fallback, it's how the GitHub Pages deployment works permanently (see [Deployment](#deployment) for what real Claude generation would require):
 
-- **`generate-recipe`** matches the query against `src/lib/fallbackRecipes.ts` (~20 common kid recipes — pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else.
-- **`parrot-chat`** uses `src/lib/fallbackChat.ts`: a keyword-based guardrail (identical trigger words/behavior to the real prompt) plus food-specific answers pulled from the same recipe library.
-
-Both switch to real Claude-generated responses automatically the moment a real key is added — no other code changes needed.
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` | From your Supabase project's **Settings → API**. Both are safe to expose to the browser — the anon key can only do what your Row Level Security policies allow. **If these are left unset, the sign-up gate still works** (it unlocks the app locally without persisting the email) so the rest of the app is testable before you've created a Supabase project. |
+- **Recipe generation** (`src/lib/fallbackRecipes.ts`) matches the query against ~20 common kid recipes (pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else.
+- **Pollee's chat** (`src/lib/fallbackChat.ts`) uses a keyword-based safety guardrail (redirects off-topic or high-risk kitchen questions to "ask Mom or Dad") plus food-specific answers pulled from the same recipe library.
 
 #### Setting up the `signups` table
 
@@ -71,7 +89,7 @@ Swap any of these for your own assets at any time — no code changes needed bey
 
 ### SMS "Order Ingredients" simulation
 
-The parental-permission flow (`src/app/api/order-ingredients/route.ts`) is a **simulation only** — there's no Twilio/SMS provider wired up. It returns the payload a real integration would send (recipient, message body, status) so the UI flow is demonstrable end-to-end. Swap in a real provider by replacing the `console.log` + response in that route handler.
+The parental-permission flow (in `AIRecipeSection.tsx`'s `handleOrderIngredients`) is a **simulation only**, entirely client-side — there's no Twilio/SMS provider wired up. It builds the message a real integration would send (recipient, body) and displays it, so the UI flow is demonstrable end-to-end without a server.
 
 ## Project Structure
 
@@ -81,20 +99,22 @@ src/
     page.tsx                 # composes all sections, wrapped in AppGate
     layout.tsx                # fonts (Fredoka + Nunito), metadata
     globals.css                # theme tokens (color, font), marquee/bubble keyframes
-    api/
-      generate-recipe/route.ts    # Anthropic SDK call, structured JSON output
-      order-ingredients/route.ts  # simulated SMS payload
-      parrot-chat/route.ts        # guardrailed cooking-only chat for the parrot mascot
   components/                # Header, Hero, RecipeCarousel, AIRecipeSection,
                               # CommuniteeSection, Footer, and their modals
                               # AppGate + SignUpGate (mandatory email gate)
                               # ParrotMascot + ParrotChat + ParrotIcon (FAB assistant)
   lib/
-    anthropic.ts                # server-side Anthropic client
+    fallbackRecipes.ts          # curated recipe library + query matching
+    fallbackChat.ts             # Pollee's guardrail + food-aware replies
+    useSpeechToText.ts           # shared voice-input hook (mic button)
+    parrotVoice.ts               # speech-synthesis wrapper (Pollee's voice)
     supabase.ts                 # browser Supabase client (null-safe if unconfigured)
+    basePath.ts                  # GitHub Pages basePath constant for raw <video>/<audio>
   data/
     recipes.ts                 # the 8 built-in Recipe Templates
     community.ts                # mock Communitee UGC cards
+.github/workflows/
+  deploy.yml                    # builds the static export and deploys to GitHub Pages
 ```
 
 ## Design System

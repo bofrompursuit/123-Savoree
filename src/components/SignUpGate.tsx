@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase";
 import ParrotFaceIcon from "./ParrotFaceIcon";
+import { BASE_PATH } from "@/lib/basePath";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -53,7 +54,7 @@ export default function SignUpGate({
   return (
     <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-savoree-ink px-4 py-16 sm:px-6">
       <video
-        src="/video/kids-baking.mp4"
+        src={`${BASE_PATH}/video/kids-baking.mp4`}
         autoPlay
         muted
         loop

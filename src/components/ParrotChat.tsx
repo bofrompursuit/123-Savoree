@@ -8,6 +8,11 @@ import {
   stopParrotVoice,
 } from "@/lib/parrotVoice";
 import { useSpeechToText } from "@/lib/useSpeechToText";
+import { getFallbackChatReply } from "@/lib/fallbackChat";
+
+// A short artificial delay so "Pollee is thinking..." reads as real work
+// rather than an instant flash — the reply lookup itself is synchronous.
+const THINKING_DELAY_MS = 500;
 
 type ChatTurn = { role: "user" | "assistant"; text: string };
 
@@ -49,30 +54,14 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
     const message = rawMessage.trim();
     if (!message || loading) return;
 
-    const nextTurns: ChatTurn[] = [...turns, { role: "user", text: message }];
-    setTurns(nextTurns);
+    setTurns((prev) => [...prev, { role: "user", text: message }]);
     setInput("");
     setLoading(true);
 
-    try {
-      const res = await fetch("/api/parrot-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, history: nextTurns.slice(0, -1) }),
-      });
-      const data = await res.json();
-      const reply: string = res.ok
-        ? data.reply
-        : (data.error ?? "Squawk! Something went wrong.");
-      setTurns((prev) => [...prev, { role: "assistant", text: reply }]);
-    } catch {
-      setTurns((prev) => [
-        ...prev,
-        { role: "assistant", text: "Squawk! I couldn't connect — try again?" },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+    await new Promise((resolve) => setTimeout(resolve, THINKING_DELAY_MS));
+    const reply = getFallbackChatReply(message);
+    setTurns((prev) => [...prev, { role: "assistant", text: reply }]);
+    setLoading(false);
   }
 
   function handleSubmit(e: React.FormEvent) {

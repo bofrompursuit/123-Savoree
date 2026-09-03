@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { BASE_PATH } from "@/lib/basePath";
 
 export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -30,7 +31,7 @@ export default function AudioPlayer() {
     <div className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5">
       <audio
         ref={audioRef}
-        src="/audio/theme.mp3"
+        src={`${BASE_PATH}/audio/theme.mp3`}
         loop
         onError={() => setMissingTrack(true)}
       />

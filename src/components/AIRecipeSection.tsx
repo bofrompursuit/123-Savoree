@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useSpeechToText } from "@/lib/useSpeechToText";
+import { getFallbackRecipe } from "@/lib/fallbackRecipes";
+import { BASE_PATH } from "@/lib/basePath";
 import ParrotIcon from "./ParrotIcon";
+
+// A short artificial delay so "Cooking it up..." reads as real work rather
+// than an instant flash — the recipe lookup itself is synchronous.
+const THINKING_DELAY_MS = 500;
 
 type StepResult = { title: string; instruction: string };
 type RecipeResult = {
@@ -14,7 +20,6 @@ type RecipeResult = {
 export default function AIRecipeSection() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [recipe, setRecipe] = useState<RecipeResult | null>(null);
   const [guardianPhone, setGuardianPhone] = useState("");
   const [smsStatus, setSmsStatus] = useState<
@@ -30,46 +35,24 @@ export default function AIRecipeSection() {
     e.preventDefault();
     if (!query.trim()) return;
     setLoading(true);
-    setError(null);
     setRecipe(null);
     setSmsStatus(null);
 
-    try {
-      const res = await fetch("/api/generate-recipe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Something went wrong");
-      setRecipe(data.recipe);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+    await new Promise((resolve) => setTimeout(resolve, THINKING_DELAY_MS));
+    setRecipe(getFallbackRecipe(query));
+    setLoading(false);
   }
 
   async function handleOrderIngredients(e: React.FormEvent) {
     e.preventDefault();
     if (!guardianPhone.trim() || !recipe) return;
 
-    const res = await fetch("/api/order-ingredients", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        guardianPhone,
-        recipeName: recipe.recipeName,
-        groceryList: recipe.groceryList,
-      }),
+    // Simulation only — there's no real SMS provider wired up. See README.
+    const itemCount = recipe.groceryList.length;
+    setSmsStatus({
+      sentTo: guardianPhone.trim(),
+      body: `123 Savoree: Your kid wants help getting ingredients for "${recipe.recipeName}" (${itemCount} items). Reply YES to approve the order, or open the app to review the list.`,
     });
-    const data = await res.json();
-    if (res.ok) {
-      setSmsStatus({
-        sentTo: data.simulatedPayload.to,
-        body: data.simulatedPayload.body,
-      });
-    }
   }
 
   return (
@@ -78,7 +61,7 @@ export default function AIRecipeSection() {
       className="relative overflow-hidden bg-savoree-sand/50 px-4 py-16 sm:px-6 sm:py-24"
     >
       <video
-        src="/video/burger-fries.mp4"
+        src={`${BASE_PATH}/video/burger-fries.mp4`}
         autoPlay
         muted
         loop
@@ -140,12 +123,6 @@ export default function AIRecipeSection() {
             </button>
           </div>
         </form>
-
-        {error && (
-          <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
-            {error}
-          </p>
-        )}
 
         {recipe && (
           <div className="mt-8 rounded-3xl bg-white p-6 shadow-md sm:p-8">
