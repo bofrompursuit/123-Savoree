@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ParrotFaceIcon from "./ParrotFaceIcon";
+import NarwhalFaceIcon from "./NarwhalFaceIcon";
 import {
   isSpeechSynthesisSupported,
-  speakAsParrot,
-  stopParrotVoice,
-} from "@/lib/parrotVoice";
+  speakAsNarwhal,
+  stopNarwhalVoice,
+} from "@/lib/narwhalVoice";
 import { useSpeechToText } from "@/lib/useSpeechToText";
 import { getFallbackChatReply } from "@/lib/fallbackChat";
 
@@ -18,10 +18,10 @@ type ChatTurn = { role: "user" | "assistant"; text: string };
 
 const GREETING: ChatTurn = {
   role: "assistant",
-  text: "Squawk! Hi, I'm Pollee! Ask me anything about cooking, or say a food and I'll help you build a 123 Recipe. 🦜",
+  text: "Squeak! Hi, I'm Pollee! Ask me anything about cooking, or say a food and I'll help you build a 123 Recipe. 🦄",
 };
 
-export default function ParrotChat({ onClose }: { onClose: () => void }) {
+export default function NarwhalChat({ onClose }: { onClose: () => void }) {
   const [turns, setTurns] = useState<ChatTurn[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,14 +41,14 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
     if (!voiceSupported) return;
     for (let i = spokenCountRef.current; i < turns.length; i++) {
       if (turns[i].role === "assistant" && voiceEnabled) {
-        speakAsParrot(turns[i].text);
+        speakAsNarwhal(turns[i].text);
       }
     }
     spokenCountRef.current = turns.length;
   }, [turns, voiceEnabled, voiceSupported]);
 
   // Stop any in-progress speech when the chat panel closes.
-  useEffect(() => stopParrotVoice, []);
+  useEffect(() => stopNarwhalVoice, []);
 
   async function sendMessage(rawMessage: string) {
     const message = rawMessage.trim();
@@ -81,7 +81,7 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-x-4 bottom-24 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-28 sm:right-6 sm:w-96">
       <div className="flex items-center justify-between gap-2 bg-savoree-blue px-4 py-3">
         <div className="flex items-center gap-2">
-          <ParrotFaceIcon className="h-8 w-8" />
+          <NarwhalFaceIcon className="h-8 w-8" />
           <span className="font-display text-base font-semibold text-white">
             Pollee
           </span>
@@ -92,7 +92,7 @@ export default function ParrotChat({ onClose }: { onClose: () => void }) {
               type="button"
               onClick={() => {
                 setVoiceEnabled((v) => {
-                  if (v) stopParrotVoice();
+                  if (v) stopNarwhalVoice();
                   return !v;
                 });
               }}

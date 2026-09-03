@@ -2,53 +2,63 @@
 
 import { useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase";
-import ParrotFaceIcon from "./ParrotFaceIcon";
+import NarwhalFaceIcon from "./NarwhalFaceIcon";
 import { BASE_PATH } from "@/lib/basePath";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Loose phone check: strip everything but digits and require 7-15 of them
+// (covers local and international numbers) — matches E.164's digit range.
+const PHONE_DIGITS_PATTERN = /^\d{7,15}$/;
+
+function isValidContact(value: string): boolean {
+  const trimmed = value.trim();
+  if (EMAIL_PATTERN.test(trimmed)) return true;
+  const digitsOnly = trimmed.replace(/[^\d]/g, "");
+  return PHONE_DIGITS_PATTERN.test(digitsOnly);
+}
 
 export default function SignUpGate({
   onUnlock,
 }: {
-  onUnlock: (email: string) => void;
+  onUnlock: (contact: string) => void;
 }) {
-  const [email, setEmail] = useState("");
+  const [contact, setContact] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!EMAIL_PATTERN.test(email.trim())) {
+    const trimmed = contact.trim();
+    if (!isValidContact(trimmed)) {
       setStatus("error");
-      setErrorMessage("Please enter a valid email address.");
+      setErrorMessage("Please enter a valid email or phone number.");
       return;
     }
 
     setStatus("loading");
     setErrorMessage(null);
 
-    const supabase = getSupabaseClient();
-    if (supabase) {
+    try {
+      const supabase = getSupabaseClient();
       const { error } = await supabase
-        .from("signups")
-        .insert({ email: email.trim().toLowerCase() });
+        .from("leads")
+        .insert([{ contact_info: trimmed }]);
 
-      // Ignore duplicate-email conflicts (unique constraint) — they've
-      // already signed up before, so still let them in.
-      if (error && error.code !== "23505") {
+      if (error) {
+        console.error("[SignUpGate] Supabase insert failed:", error);
         setStatus("error");
-        setErrorMessage("Something went wrong — please try again.");
+        setErrorMessage("Something went wrong saving that — please try again.");
         return;
       }
-    } else {
-      console.warn(
-        "[SignUpGate] Supabase isn't configured (NEXT_PUBLIC_SUPABASE_URL / " +
-          "NEXT_PUBLIC_SUPABASE_ANON_KEY missing) — unlocking without saving the email.",
-      );
+    } catch (err) {
+      console.error("[SignUpGate] Supabase request failed:", err);
+      setStatus("error");
+      setErrorMessage("Something went wrong saving that — please try again.");
+      return;
     }
 
-    onUnlock(email.trim());
+    onUnlock(trimmed);
   }
 
   return (
@@ -67,7 +77,7 @@ export default function SignUpGate({
 
       <div className="relative flex w-full max-w-md flex-col items-center rounded-3xl bg-white/95 p-8 text-center shadow-2xl backdrop-blur">
         <div className="flex items-center gap-2">
-          <ParrotFaceIcon className="h-12 w-12" />
+          <NarwhalFaceIcon className="h-12 w-12" />
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-savoree-blue text-xl font-bold text-white">
             123
           </span>
@@ -76,18 +86,18 @@ export default function SignUpGate({
           123 Savoree
         </h1>
         <p className="mt-2 text-savoree-ink/70">
-          Delicious things come in 3&apos;s. Enter your email to start
-          cooking.
+          Delicious things come in 3&apos;s. Enter your email or phone number
+          to start cooking.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 flex w-full flex-col gap-3">
           <input
-            type="email"
+            type="text"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            aria-label="Email address"
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            placeholder="Email or phone number"
+            aria-label="Email or phone number"
             className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3.5 text-base text-savoree-ink outline-none transition focus:border-savoree-neon-dark"
           />
           <button
@@ -106,7 +116,7 @@ export default function SignUpGate({
         )}
 
         <p className="mt-5 text-xs text-savoree-ink/40">
-          We&apos;ll only use your email to save your recipes — no spam.
+          We&apos;ll only use this to save your recipes — no spam.
         </p>
       </div>
     </div>

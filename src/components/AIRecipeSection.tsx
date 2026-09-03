@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSpeechToText } from "@/lib/useSpeechToText";
 import { getFallbackRecipe } from "@/lib/fallbackRecipes";
 import { BASE_PATH } from "@/lib/basePath";
-import ParrotIcon from "./ParrotIcon";
+import NarwhalIcon from "./NarwhalIcon";
 
 // A short artificial delay so "Cooking it up..." reads as real work rather
 // than an instant flash — the recipe lookup itself is synchronous.
@@ -74,7 +74,7 @@ export default function AIRecipeSection() {
 
       <div className="relative mx-auto max-w-3xl">
         <div className="text-center">
-          <ParrotIcon className="animate-savoree-mascot-bob mx-auto mb-2 h-16 w-16" />
+          <NarwhalIcon className="animate-savoree-mascot-bob mx-auto mb-2 h-16 w-16" />
           <span className="text-sm font-bold uppercase tracking-wide text-savoree-navy">
             AI Recipe Helper
           </span>

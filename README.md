@@ -48,7 +48,7 @@ That needs a host that can run server code and keep an API key secret — GitHub
 
 | Variable | Where it's used | Notes |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` | From your Supabase project's **Settings → API**. Both are safe to expose to the browser — the anon key can only do what your Row Level Security policies allow, and this call already runs client-side (no server needed). **If these are left unset, the sign-up gate still works** (it unlocks the app locally without persisting the email) so the rest of the app is testable before you've created a Supabase project. |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` | Optional — `src/lib/supabase.ts` already has this project's URL and publishable key baked in as defaults (Supabase publishable keys are meant to ship in client code; access is governed by the table's Row Level Security policy, not by keeping this value secret), so the deployed site works without setting anything. Set these only to point a local dev checkout at a **different** Supabase project. |
 
 ### AI features (no server, no API key)
 
@@ -57,31 +57,33 @@ That needs a host that can run server code and keep an API key secret — GitHub
 - **Recipe generation** (`src/lib/fallbackRecipes.ts`) matches the query against ~20 common kid recipes (pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else.
 - **Pollee's chat** (`src/lib/fallbackChat.ts`) uses a keyword-based safety guardrail (redirects off-topic or high-risk kitchen questions to "ask Mom or Dad") plus food-specific answers pulled from the same recipe library.
 
-#### Setting up the `signups` table
+#### Setting up the `leads` table
 
-In the Supabase SQL editor:
+The sign-up gate inserts into a `leads` table with a single `contact_info` column (holds either an email or a phone number). Run this once in the Supabase SQL editor for the project above:
 
 ```sql
-create table signups (
+create table leads (
   id uuid primary key default gen_random_uuid(),
-  email text not null unique,
+  contact_info text not null,
   created_at timestamptz not null default now()
 );
 
-alter table signups enable row level security;
+alter table leads enable row level security;
 
--- Allow anyone (the anon key) to insert their own email, but not read others'.
-create policy "Anyone can sign up"
-  on signups for insert
+-- Allow anyone (the publishable/anon key) to insert a lead, but not read others'.
+create policy "Anyone can submit a lead"
+  on leads for insert
   to anon
   with check (true);
 ```
+
+Until this table exists, submissions on the live site will fail with a graceful "Something went wrong saving that" error (shown in the form, logged to the browser console) rather than silently losing data or crashing.
 
 ### Media assets
 
 | File | Source | License |
 |---|---|---|
-| `public/audio/theme.mp3` | [Mixkit — Latin Pop](https://mixkit.co/free-stock-music/latin-pop/) | Mixkit Free License — free for commercial use, no attribution required |
+| `public/audio/theme.mp3` | [Mixkit — Relax Beat](https://mixkit.co/free-stock-music/relax-beat/) (by Arulo) | Mixkit Free License — free for commercial use, no attribution required |
 | `public/video/kids-baking.mp4` | [Mixkit — gingerbread cookie decorating](https://mixkit.co/free-stock-video/close-up-of-people-decorating-gingerbread-cookies-for-christmas-48876/), used behind `SignUpGate.tsx` | Mixkit Free License |
 | `public/video/burger-fries.mp4` | [Mixkit — double burger with fries](https://mixkit.co/free-stock-video/double-burger-with-fries-14010/), used behind `AIRecipeSection.tsx` | Mixkit Free License |
 
@@ -102,13 +104,13 @@ src/
   components/                # Header, Hero, RecipeCarousel, AIRecipeSection,
                               # CommuniteeSection, Footer, and their modals
                               # AppGate + SignUpGate (mandatory email gate)
-                              # ParrotMascot + ParrotChat + ParrotIcon (FAB assistant)
+                              # NarwhalMascot + NarwhalChat + NarwhalIcon (FAB assistant)
   lib/
     fallbackRecipes.ts          # curated recipe library + query matching
     fallbackChat.ts             # Pollee's guardrail + food-aware replies
     useSpeechToText.ts           # shared voice-input hook (mic button)
-    parrotVoice.ts               # speech-synthesis wrapper (Pollee's voice)
-    supabase.ts                 # browser Supabase client (null-safe if unconfigured)
+    narwhalVoice.ts               # speech-synthesis wrapper (Pollee's voice)
+    supabase.ts                 # browser Supabase client (this project's URL/key baked in as defaults)
     basePath.ts                  # GitHub Pages basePath constant for raw <video>/<audio>
   data/
     recipes.ts                 # the 8 built-in Recipe Templates
