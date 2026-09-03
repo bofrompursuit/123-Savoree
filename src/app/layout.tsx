@@ -17,6 +17,11 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "123 Savoree",
   description: "Delicious things come in 3's",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Savoree",
+  },
 };
 
 export const viewport: Viewport = {
