@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AuthModal from "./AuthModal";
-import NarwhalFaceIcon from "./NarwhalFaceIcon";
+import ToqueeIcon from "./ToqueeIcon";
 
 const navLinks = [
   { href: "#recipes", label: "Recipes" },
@@ -18,7 +18,7 @@ export default function Header() {
       <header className="sticky top-0 z-40 border-b border-savoree-ink/5 bg-savoree-cream/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:h-20 sm:px-6">
           <a href="#top" className="flex items-center gap-2">
-            <NarwhalFaceIcon className="h-8 w-8 sm:h-9 sm:w-9" />
+            <ToqueeIcon className="animate-savoree-mascot-bob h-9 w-9 sm:h-10 sm:w-10" />
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-savoree-blue text-lg font-bold text-white sm:h-10 sm:w-10">
               123
             </span>

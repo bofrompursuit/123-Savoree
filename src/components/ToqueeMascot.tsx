@@ -1,27 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import NarwhalFaceIcon from "./NarwhalFaceIcon";
-import NarwhalChat from "./NarwhalChat";
+import ToqueeIcon from "./ToqueeIcon";
+import ToqueeChat from "./ToqueeChat";
 
 const IDLE_MESSAGES = [
   "Hello! It's a good day, isn't it?",
   "Let's cook something delicious!",
-  "Squeak! Need a recipe idea?",
-  "Pollee loves a good snack. Do you?",
+  "✨ Need a recipe idea?",
+  "Toquee loves cooking up a little magic!",
   "3 steps is all it takes!",
 ];
 
 const LANDING_MESSAGES = [
   "Hi! Pop your email in so we can start cooking!",
-  "I'll be right here once you sign up. 🦄",
-  "Squeak! Delicious things come in 3's — let's go!",
+  "I'll be right here once you sign up. ✨",
+  "✨ Delicious things come in 3's — let's go!",
 ];
 
-export default function NarwhalMascot({ landing = false }: { landing?: boolean }) {
+// How long the click-triggered spin plays before settling back to idle bob.
+const SPIN_MS = 650;
+
+export default function ToqueeMascot({ landing = false }: { landing?: boolean }) {
   const [chatOpen, setChatOpen] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState<number | null>(null);
+  const [spinning, setSpinning] = useState(false);
   const messages = landing ? LANDING_MESSAGES : IDLE_MESSAGES;
+
+  function handleClick() {
+    setChatOpen((v) => !v);
+    setSpinning(true);
+    window.setTimeout(() => setSpinning(false), SPIN_MS);
+  }
 
   useEffect(() => {
     // The bubble is already hidden while chatOpen is true (see render below),
@@ -53,14 +63,16 @@ export default function NarwhalMascot({ landing = false }: { landing?: boolean }
 
       <button
         type="button"
-        onClick={() => setChatOpen((v) => !v)}
-        aria-label={chatOpen ? "Close Pollee the narwhal chat" : "Chat with Pollee the narwhal"}
-        className="fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-savoree-neon shadow-xl shadow-savoree-neon/40 transition hover:-translate-y-1 hover:brightness-105 sm:bottom-8 sm:right-8"
+        onClick={handleClick}
+        aria-label={chatOpen ? "Close Toquee chat" : "Chat with Toquee"}
+        className="fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center transition-transform duration-200 hover:-translate-y-1 hover:scale-110 active:scale-90 sm:bottom-8 sm:right-8"
       >
-        <NarwhalFaceIcon className="h-11 w-11" />
+        <span className={`flex h-14 w-14 items-center justify-center ${spinning ? "animate-savoree-spin" : ""}`}>
+          <ToqueeIcon className="animate-savoree-mascot-bob h-full w-full" />
+        </span>
       </button>
 
-      {chatOpen && <NarwhalChat onClose={() => setChatOpen(false)} />}
+      {chatOpen && <ToqueeChat onClose={() => setChatOpen(false)} />}
     </>
   );
 }

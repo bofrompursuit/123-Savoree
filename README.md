@@ -83,7 +83,7 @@ Until this table exists, submissions on the live site will fail with a graceful 
 
 | File | Source | License |
 |---|---|---|
-| `public/audio/theme.mp3` | [Mixkit — Relax Beat](https://mixkit.co/free-stock-music/relax-beat/) (by Arulo) | Mixkit Free License — free for commercial use, no attribution required |
+| `public/audio/theme.mp3` | [Mixkit — Playground Fun](https://mixkit.co/free-stock-music/instrument/ukulele/) (by Ahjay Stelino) | Mixkit Free License — free for commercial use, no attribution required |
 | `public/video/kids-baking.mp4` | [Mixkit — gingerbread cookie decorating](https://mixkit.co/free-stock-video/close-up-of-people-decorating-gingerbread-cookies-for-christmas-48876/), used behind `SignUpGate.tsx` | Mixkit Free License |
 | `public/video/burger-fries.mp4` | [Mixkit — double burger with fries](https://mixkit.co/free-stock-video/double-burger-with-fries-14010/), used behind `AIRecipeSection.tsx` | Mixkit Free License |
 

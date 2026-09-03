@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useSpeechToText } from "@/lib/useSpeechToText";
 import { getFallbackRecipe } from "@/lib/fallbackRecipes";
 import { BASE_PATH } from "@/lib/basePath";
-import NarwhalIcon from "./NarwhalIcon";
+import ToqueeIcon from "./ToqueeIcon";
 
 // A short artificial delay so "Cooking it up..." reads as real work rather
 // than an instant flash — the recipe lookup itself is synchronous.
 const THINKING_DELAY_MS = 500;
+// How long Toquee plays the happy double-blink after a recipe is generated.
+const EXCITED_BLINK_MS = 1800;
 
 type StepResult = { title: string; instruction: string };
 type RecipeResult = {
@@ -21,6 +23,7 @@ export default function AIRecipeSection() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [recipe, setRecipe] = useState<RecipeResult | null>(null);
+  const [excited, setExcited] = useState(false);
   const [guardianPhone, setGuardianPhone] = useState("");
   const [smsStatus, setSmsStatus] = useState<
     { sentTo: string; body: string } | null
@@ -41,6 +44,8 @@ export default function AIRecipeSection() {
     await new Promise((resolve) => setTimeout(resolve, THINKING_DELAY_MS));
     setRecipe(getFallbackRecipe(query));
     setLoading(false);
+    setExcited(true);
+    window.setTimeout(() => setExcited(false), EXCITED_BLINK_MS);
   }
 
   async function handleOrderIngredients(e: React.FormEvent) {
@@ -74,7 +79,9 @@ export default function AIRecipeSection() {
 
       <div className="relative mx-auto max-w-3xl">
         <div className="text-center">
-          <NarwhalIcon className="animate-savoree-mascot-bob mx-auto mb-2 h-16 w-16" />
+          <div className={`mx-auto mb-2 h-16 w-16 ${excited ? "animate-savoree-spin" : ""}`}>
+            <ToqueeIcon excited={excited} className="animate-savoree-mascot-bob h-full w-full" />
+          </div>
           <span className="text-sm font-bold uppercase tracking-wide text-savoree-navy">
             AI Recipe Helper
           </span>

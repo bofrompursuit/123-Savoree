@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase";
-import NarwhalFaceIcon from "./NarwhalFaceIcon";
+import ToqueeIcon from "./ToqueeIcon";
 import { BASE_PATH } from "@/lib/basePath";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,7 +77,7 @@ export default function SignUpGate({
 
       <div className="relative flex w-full max-w-md flex-col items-center rounded-3xl bg-white/95 p-8 text-center shadow-2xl backdrop-blur">
         <div className="flex items-center gap-2">
-          <NarwhalFaceIcon className="h-12 w-12" />
+          <ToqueeIcon className="animate-savoree-mascot-bob h-12 w-12" />
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-savoree-blue text-xl font-bold text-white">
             123
           </span>

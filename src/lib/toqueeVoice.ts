@@ -1,4 +1,4 @@
-// Gives Pollee a cheerful, boyish narwhal voice using the browser's built-in
+// Gives Toquee a cheerful, boyish voice using the browser's built-in
 // SpeechSynthesis API — free, no API key, no external service, and it's the
 // same Web Speech family the AI Recipee voice *input* already uses.
 //
@@ -43,7 +43,7 @@ export function isSpeechSynthesisSupported(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
-export function speakAsNarwhal(text: string) {
+export function speakAsToquee(text: string) {
   if (!isSpeechSynthesisSupported()) return;
 
   window.speechSynthesis.cancel();
@@ -58,7 +58,7 @@ export function speakAsNarwhal(text: string) {
   window.speechSynthesis.speak(utterance);
 }
 
-export function stopNarwhalVoice() {
+export function stopToqueeVoice() {
   if (!isSpeechSynthesisSupported()) return;
   window.speechSynthesis.cancel();
 }

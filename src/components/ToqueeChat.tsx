@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import NarwhalFaceIcon from "./NarwhalFaceIcon";
+import ToqueeIcon from "./ToqueeIcon";
 import {
   isSpeechSynthesisSupported,
-  speakAsNarwhal,
-  stopNarwhalVoice,
-} from "@/lib/narwhalVoice";
+  speakAsToquee,
+  stopToqueeVoice,
+} from "@/lib/toqueeVoice";
 import { useSpeechToText } from "@/lib/useSpeechToText";
 import { getFallbackChatReply } from "@/lib/fallbackChat";
 
-// A short artificial delay so "Pollee is thinking..." reads as real work
+// A short artificial delay so "Toquee is thinking..." reads as real work
 // rather than an instant flash — the reply lookup itself is synchronous.
 const THINKING_DELAY_MS = 500;
 
@@ -18,10 +18,10 @@ type ChatTurn = { role: "user" | "assistant"; text: string };
 
 const GREETING: ChatTurn = {
   role: "assistant",
-  text: "Squeak! Hi, I'm Pollee! Ask me anything about cooking, or say a food and I'll help you build a 123 Recipe. 🦄",
+  text: "✨ Hi, I'm Toquee! Ask me anything about cooking, or say a food and I'll help you build a 123 Recipe.",
 };
 
-export default function NarwhalChat({ onClose }: { onClose: () => void }) {
+export default function ToqueeChat({ onClose }: { onClose: () => void }) {
   const [turns, setTurns] = useState<ChatTurn[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,14 +41,14 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
     if (!voiceSupported) return;
     for (let i = spokenCountRef.current; i < turns.length; i++) {
       if (turns[i].role === "assistant" && voiceEnabled) {
-        speakAsNarwhal(turns[i].text);
+        speakAsToquee(turns[i].text);
       }
     }
     spokenCountRef.current = turns.length;
   }, [turns, voiceEnabled, voiceSupported]);
 
   // Stop any in-progress speech when the chat panel closes.
-  useEffect(() => stopNarwhalVoice, []);
+  useEffect(() => stopToqueeVoice, []);
 
   async function sendMessage(rawMessage: string) {
     const message = rawMessage.trim();
@@ -69,7 +69,7 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
     sendMessage(input);
   }
 
-  // Speaking to Pollee sends the transcribed question automatically —
+  // Speaking to Toquee sends the transcribed question automatically —
   // no need to tap send after talking.
   const {
     listening,
@@ -81,9 +81,9 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-x-4 bottom-24 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:inset-x-auto sm:bottom-28 sm:right-6 sm:w-96">
       <div className="flex items-center justify-between gap-2 bg-savoree-blue px-4 py-3">
         <div className="flex items-center gap-2">
-          <NarwhalFaceIcon className="h-8 w-8" />
+          <ToqueeIcon className="animate-savoree-mascot-bob h-8 w-8" />
           <span className="font-display text-base font-semibold text-white">
-            Pollee
+            Toquee
           </span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -92,12 +92,12 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
               type="button"
               onClick={() => {
                 setVoiceEnabled((v) => {
-                  if (v) stopNarwhalVoice();
+                  if (v) stopToqueeVoice();
                   return !v;
                 });
               }}
               aria-pressed={voiceEnabled}
-              aria-label={voiceEnabled ? "Mute Pollee's voice" : "Unmute Pollee's voice"}
+              aria-label={voiceEnabled ? "Mute Toquee's voice" : "Unmute Toquee's voice"}
               className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-sm text-white transition hover:bg-white/25"
             >
               {voiceEnabled ? "🔊" : "🔇"}
@@ -132,7 +132,7 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
         ))}
         {loading && (
           <div className="self-start rounded-2xl bg-savoree-sand px-3.5 py-2.5 text-sm text-savoree-ink/50">
-            Pollee is thinking...
+            Toquee is thinking...
           </div>
         )}
       </div>
@@ -145,7 +145,7 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={listening ? "Listening..." : "Ask Pollee a cooking question..."}
+          placeholder={listening ? "Listening..." : "Ask Toquee a cooking question..."}
           className="flex-1 rounded-full border-2 border-savoree-ink/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-savoree-neon-dark"
         />
         {voiceInputSupported && (
@@ -153,7 +153,7 @@ export default function NarwhalChat({ onClose }: { onClose: () => void }) {
             type="button"
             onClick={toggleVoiceInput}
             aria-pressed={listening}
-            aria-label={listening ? "Stop talking to Pollee" : "Talk to Pollee"}
+            aria-label={listening ? "Stop talking to Toquee" : "Talk to Toquee"}
             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg transition ${
               listening
                 ? "animate-pulse bg-savoree-coral text-white"

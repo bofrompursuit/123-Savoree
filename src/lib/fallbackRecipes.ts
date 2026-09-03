@@ -1,5 +1,5 @@
 // A small curated recipe library so "...more One Two Three Recipee" and
-// Pollee still work with zero setup — no API key, no cost, no network call.
+// Toquee still work with zero setup — no API key, no cost, no network call.
 // Used automatically whenever ANTHROPIC_API_KEY isn't configured (see
 // isAnthropicConfigured() in anthropic.ts). Once a real key is added, both
 // features switch to Claude-generated recipes instead.
