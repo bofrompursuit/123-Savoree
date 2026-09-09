@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { communityPosts } from "@/data/community";
+import { useEffect, useState } from "react";
+import { communityPosts, type CommunityPost } from "@/data/community";
+import { fetchApprovedSubmissions } from "@/lib/community";
 import CommunityCard from "./CommunityCard";
 import SubmissionModal from "./SubmissionModal";
-
-const topRow = communityPosts.slice(0, 4);
-const bottomRow = communityPosts.slice(4, 8);
 
 function MarqueeRow({
   posts,
   direction,
 }: {
-  posts: typeof communityPosts;
+  posts: CommunityPost[];
   direction: "left" | "right";
 }) {
   const loop = [...posts, ...posts];
@@ -36,6 +34,16 @@ function MarqueeRow({
 
 export default function CommuniteeSection() {
   const [submissionOpen, setSubmissionOpen] = useState(false);
+  const [submittedPosts, setSubmittedPosts] = useState<CommunityPost[]>([]);
+
+  useEffect(() => {
+    fetchApprovedSubmissions().then(setSubmittedPosts);
+  }, []);
+
+  const allPosts = [...communityPosts, ...submittedPosts];
+  const midpoint = Math.ceil(allPosts.length / 2);
+  const topRow = allPosts.slice(0, midpoint);
+  const bottomRow = allPosts.slice(midpoint);
 
   return (
     <section id="communitee" className="bg-savoree-cream py-16 sm:py-24">

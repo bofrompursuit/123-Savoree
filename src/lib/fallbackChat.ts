@@ -42,6 +42,16 @@ const COOKING_HINTS = [
   "breakfast",
 ];
 
+// Word-boundary so "which pizza" doesn't accidentally match "hi".
+const GREETING_PATTERN = /\b(hi+|hey+|hello|hiya|howdy|yo|sup)\b/i;
+const GREETING_PHRASES = ["good morning", "good afternoon", "good evening", "what's up"];
+
+const GREETING_REPLIES = [
+  "✨ Hi there! I'm Toquee, your kitchen buddy! Tell me a food you want to make, or paste a recipe link in the box above and I'll fetch the steps for you.",
+  "👋 Hey hey! Ready to cook something fun? Ask me about pizza, tacos, or paste a recipe link up above!",
+  "🎉 Hiya! Toquee here! Name a food and I'll help, or drop a recipe link above and I'll pull up the ingredients and steps.",
+];
+
 /**
  * Rule-based logic for Toquee's chat — runs entirely client-side (no
  * server, no API key), matching common food questions against the recipe
@@ -60,6 +70,10 @@ export function getFallbackChatReply(message: string): string {
       .map((step, i) => `${i + 1}) ${step.instruction}`)
       .join(" ");
     return `✨ Here's a simple idea for ${recipe.recipeName}: ${steps} Want the full grocery list? Try the box above!`;
+  }
+
+  if (GREETING_PATTERN.test(m) || GREETING_PHRASES.some((phrase) => m.includes(phrase))) {
+    return GREETING_REPLIES[Math.floor(Math.random() * GREETING_REPLIES.length)];
   }
 
   if (COOKING_HINTS.some((hint) => m.includes(hint))) {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Modal from "./Modal";
+import { submitCommunityPost } from "@/lib/community";
 
 const categories = [
   "Quick Recipe",
@@ -18,18 +19,40 @@ export default function SubmissionModal({
   onClose: () => void;
 }) {
   const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
   const [category, setCategory] = useState<(typeof categories)[number]>(
     categories[0],
   );
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   function handleClose() {
     onClose();
     setTimeout(() => {
       setSubmitted(false);
+      setStatus("idle");
+      setErrorMessage(null);
       setTitle("");
+      setAuthor("");
       setCategory(categories[0]);
     }, 200);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMessage(null);
+
+    try {
+      await submitCommunityPost({ title: title.trim(), author: author.trim(), category });
+      setSubmitted(true);
+      setStatus("idle");
+    } catch (err) {
+      console.error("[SubmissionModal] Supabase insert failed:", err);
+      setStatus("error");
+      setErrorMessage("Something went wrong saving that — please try again.");
+    }
   }
 
   return (
@@ -68,13 +91,7 @@ export default function SubmissionModal({
             are reviewed by an admin before going live.
           </p>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSubmitted(true);
-            }}
-            className="mt-6 flex flex-col gap-4"
-          >
+          <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <label className="flex flex-col gap-1.5">
               <span className="text-sm font-bold text-savoree-ink/80">
                 Title
@@ -85,6 +102,20 @@ export default function SubmissionModal({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. My 3-Step Fruit Salad"
+                className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-blue"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-bold text-savoree-ink/80">
+                Your Name
+              </span>
+              <input
+                type="text"
+                required
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="e.g. ChefMila_9"
                 className="rounded-2xl border-2 border-savoree-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-savoree-blue"
               />
             </label>
@@ -124,10 +155,15 @@ export default function SubmissionModal({
 
             <button
               type="submit"
-              className="mt-2 rounded-full bg-savoree-neon px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark"
+              disabled={status === "loading"}
+              className="mt-2 rounded-full bg-savoree-neon px-6 py-3.5 text-base font-bold text-savoree-ink shadow-lg shadow-savoree-neon/30 transition hover:bg-savoree-neon-dark disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Submit for Review
+              {status === "loading" ? "Submitting..." : "Submit for Review"}
             </button>
+
+            {status === "error" && errorMessage && (
+              <p className="text-sm font-semibold text-red-600">{errorMessage}</p>
+            )}
           </form>
         </>
       )}

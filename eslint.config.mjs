@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // AppleDouble sidecar files this external drive's filesystem generates
+    // next to every file (already in .gitignore) — not part of the project.
+    "**/._*",
   ]),
 ]);
 

@@ -3,8 +3,13 @@
 import { useState } from "react";
 import { useSpeechToText } from "@/lib/useSpeechToText";
 import { getFallbackRecipe } from "@/lib/fallbackRecipes";
+import { scrapeRecipeFromUrl } from "@/lib/scrapeRecipeAction";
 import { BASE_PATH } from "@/lib/basePath";
 import ToqueeIcon from "./ToqueeIcon";
+
+const URL_PATTERN = /^https?:\/\//i;
+const SCRAPE_FAILURE_MESSAGE =
+  "Couldn't fetch that recipe link right now — try a dish name instead, like \"tacos\".";
 
 // A short artificial delay so "Cooking it up..." reads as real work rather
 // than an instant flash — the recipe lookup itself is synchronous.
@@ -23,6 +28,7 @@ export default function AIRecipeSection() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [recipe, setRecipe] = useState<RecipeResult | null>(null);
+  const [scrapeError, setScrapeError] = useState<string | null>(null);
   const [excited, setExcited] = useState(false);
   const [guardianPhone, setGuardianPhone] = useState("");
   const [smsStatus, setSmsStatus] = useState<
@@ -36,13 +42,30 @@ export default function AIRecipeSection() {
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
-    if (!query.trim()) return;
+    const trimmed = query.trim();
+    if (!trimmed) return;
     setLoading(true);
     setRecipe(null);
     setSmsStatus(null);
+    setScrapeError(null);
 
-    await new Promise((resolve) => setTimeout(resolve, THINKING_DELAY_MS));
-    setRecipe(getFallbackRecipe(query));
+    if (URL_PATTERN.test(trimmed)) {
+      try {
+        const scraped = await scrapeRecipeFromUrl(trimmed);
+        if (scraped) {
+          setRecipe(scraped);
+        } else {
+          setScrapeError(SCRAPE_FAILURE_MESSAGE);
+        }
+      } catch (err) {
+        console.error("[AIRecipeSection] Nimble scrape failed:", err);
+        setScrapeError(SCRAPE_FAILURE_MESSAGE);
+      }
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, THINKING_DELAY_MS));
+      setRecipe(getFallbackRecipe(trimmed));
+    }
+
     setLoading(false);
     setExcited(true);
     window.setTimeout(() => setExcited(false), EXCITED_BLINK_MS);
@@ -89,8 +112,8 @@ export default function AIRecipeSection() {
             ...more One Two Three Recipee
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-savoree-ink/70">
-            Type or say a food you want to make, and we&apos;ll build a
-            grocery list and a simple 3-step recipe.
+            Type or say a food you want to make (or paste a recipe link!),
+            and we&apos;ll build a grocery list and a simple 3-step recipe.
           </p>
         </div>
 
@@ -102,7 +125,7 @@ export default function AIRecipeSection() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="e.g. spaghetti, tacos, chicken nuggets..."
+            placeholder="e.g. spaghetti, tacos, or paste a recipe link..."
             className="flex-1 bg-transparent py-2 text-base outline-none placeholder:text-savoree-ink/40"
           />
           <div className="flex gap-2">
@@ -130,6 +153,12 @@ export default function AIRecipeSection() {
             </button>
           </div>
         </form>
+
+        {scrapeError && (
+          <p className="mt-4 text-center text-sm font-semibold text-red-600">
+            {scrapeError}
+          </p>
+        )}
 
         {recipe && (
           <div className="mt-8 rounded-3xl bg-white p-6 shadow-md sm:p-8">

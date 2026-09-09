@@ -4,58 +4,57 @@
 
 A mobile/iPad-first cooking app for kids, teenagers, and beginner cooks. Bright, kid-friendly design (Seamless-style layout, neon blue + navy accent) with 3-step recipes, an AI-style recipe generator, and a moderated community feed.
 
-**Live at:** https://bofrompursuit.github.io/123-Savoree/ (auto-deployed from `main` via GitHub Actions — see [Deployment](#deployment)).
+**Live at:** https://123-savoree.vercel.app (Vercel — see [Deployment](#deployment); previously GitHub Pages, migrated to support the server-side features below).
 
 ## Stack
 
-- **Next.js 16** (App Router, TypeScript, Turbopack), built as a **static export** (`output: "export"`) so it can be hosted on GitHub Pages with no server
+- **Next.js 16** (App Router, TypeScript, Turbopack), deployed on **Vercel** as a normal server build (Server Actions power the live recipe scraping below — this stopped being a static export when that was added)
 - **Tailwind CSS v4** (CSS-first theme in `src/app/globals.css`)
-- A built-in recipe/chat library (`src/lib/fallbackRecipes.ts`, `src/lib/fallbackChat.ts`) powers "...more One Two Three Recipee" and Pollee — no API key, no server, no cost (see [AI features](#ai-features-no-server-no-api-key))
-- **@supabase/supabase-js** for the sign-up gate's email capture
+- A built-in recipe/chat library (`src/lib/fallbackRecipes.ts`, `src/lib/fallbackChat.ts`) powers "...more One Two Three Recipee" and Toquee by default — no API key, no network call, no cost (see [AI features](#ai-features))
+- **Nimble API** (`src/lib/nimble.ts`) for live recipe-link scraping — see [AI features](#ai-features)
+- **@supabase/supabase-js** for the sign-up gate's email capture and Communitee's moderated submissions
 - **qrcode** for the client-generated Venmo donation QR code
-- Web Speech API for voice input and Pollee's voice output (no external dependency)
+- Web Speech API for voice input and Toquee's voice output (no external dependency)
 
 ## Getting Started
 
 ```bash
 npm install
-cp .env.local.example .env.local   # optional — only needed for Supabase, see below
+cp .env.local.example .env.local   # optional — only needed for Supabase/Nimble, see below
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-To preview the actual static export (what GitHub Pages serves) locally:
+To preview a production build locally:
 
 ```bash
-npm run build   # writes the static site to ./out
-npm start       # serves ./out at http://localhost:3000
+npm run build
+npm start       # serves the build at http://localhost:3000
 ```
 
 ## Deployment
 
-This repo deploys to **GitHub Pages** automatically on every push to `main` via `.github/workflows/deploy.yml`. No server, no API keys, and no manual deploy step required.
+This repo deploys to **Vercel**. Link it once (`vercel link`) and every push to `main` deploys automatically via Vercel's Git integration — no GitHub Actions workflow involved (the old `.github/workflows/deploy.yml` for GitHub Pages has been removed).
 
-Because GitHub Pages hosts project sites at `https://<user>.github.io/<repo>/`, `next.config.ts` sets `basePath`/`assetPrefix` to `/123-Savoree` — if you fork this repo under a different name, update `REPO_NAME` in `next.config.ts` to match, and update any raw `<video>`/`<audio src>` references that import `BASE_PATH` from `src/lib/basePath.ts` (next/image and next/link apply basePath automatically; plain HTML elements don't).
-
-The GitHub Pages source is set to "GitHub Actions" (not "Deploy from a branch") in the repo's Settings → Pages.
+There's no `basePath` to configure — unlike GitHub Pages' project-site subpath, Vercel serves the app at the domain root, which is also why `src/lib/basePath.ts`'s `BASE_PATH` constant is now just `""`.
 
 ### Wanting real Claude-generated responses instead of the built-in library?
 
-That needs a host that can run server code and keep an API key secret — GitHub Pages can't do either. Point a Next.js server deployment (Vercel, Netlify, Render, etc.) at this repo, reintroduce API routes under `src/app/api/` that call `@anthropic-ai/sdk`, and remove `output: "export"` from `next.config.ts`. The `src/lib/fallbackRecipes.ts` / `fallbackChat.ts` logic can stay as a graceful no-key fallback on that deployment too.
+The server-side pieces (Server Actions, secret env vars) already work here now that this deploys to Vercel — that part of the migration is done. What's still missing is the code: add `@anthropic-ai/sdk`, a `ANTHROPIC_API_KEY` env var, and a Server Action that calls it, then have `AIRecipeSection.tsx`/`ToqueeChat.tsx` try that first and fall back to `fallbackRecipes.ts`/`fallbackChat.ts` on any error — the same pattern `scrapeRecipeAction.ts` already uses for Nimble.
 
 ### Environment variables
 
 | Variable | Where it's used | Notes |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` | Optional — `src/lib/supabase.ts` already has this project's URL and publishable key baked in as defaults (Supabase publishable keys are meant to ship in client code; access is governed by the table's Row Level Security policy, not by keeping this value secret), so the deployed site works without setting anything. Set these only to point a local dev checkout at a **different** Supabase project. |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` and `src/lib/community.ts` | Optional — `src/lib/supabase.ts` already has this project's URL and publishable key baked in as defaults (Supabase publishable keys are meant to ship in client code; access is governed by the table's Row Level Security policy, not by keeping this value secret), so the deployed site works without setting anything. Set these only to point a local dev checkout at a **different** Supabase project. |
+| `NIMBLE_API_KEY` | `src/lib/nimble.ts`, called from `src/lib/scrapeRecipeAction.ts` (a Server Action) | Required for the "paste a recipe link" scraping mode in [AI features](#ai-features) to work — without it, `scrapeRecipeFromUrl()` returns `null` and the UI shows a "couldn't fetch that link" message. Server-only; never prefix with `NEXT_PUBLIC_`. Set it in Vercel under Project Settings → Environment Variables (or `vercel env add NIMBLE_API_KEY`) as well as locally in `.env.local`. |
 
-### AI features (no server, no API key)
+### AI features
 
-"...more One Two Three Recipee" and Pollee both run **entirely in the browser** via a small built-in library — this isn't a temporary fallback, it's how the GitHub Pages deployment works permanently (see [Deployment](#deployment) for what real Claude generation would require):
-
-- **Recipe generation** (`src/lib/fallbackRecipes.ts`) matches the query against ~20 common kid recipes (pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else.
-- **Pollee's chat** (`src/lib/fallbackChat.ts`) uses a keyword-based safety guardrail (redirects off-topic or high-risk kitchen questions to "ask Mom or Dad") plus food-specific answers pulled from the same recipe library.
+- **Recipe generation** (`src/lib/fallbackRecipes.ts`) — the default. Matches a typed-in dish name against ~20 common kid recipes (pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else. Runs entirely client-side, no API key, no network call.
+- **Toquee's chat** (`src/lib/fallbackChat.ts`) — same no-key default: a keyword-based safety guardrail (redirects off-topic or high-risk kitchen questions to "ask Mom or Dad") plus food-specific answers pulled from the same recipe library.
+- **Live recipe-link scraping** (`src/lib/nimble.ts`, `src/lib/recipeParser.ts`, `src/lib/scrapeRecipeAction.ts`) — paste a URL into the "...more One Two Three Recipee" box instead of a dish name, and a Server Action calls the [Nimble Web API](https://docs.nimbleway.com) to fetch the real page (bypassing anti-bot blocks) as markdown, then heuristically parses its "Ingredients"/"Instructions" headings into the same grocery-list + 3-step shape as the fallback library. Requires `NIMBLE_API_KEY` (see above); without it, or if the scrape/parse fails, the UI shows a graceful error rather than a fabricated recipe.
 
 #### Setting up the `leads` table
 
@@ -78,6 +77,39 @@ create policy "Anyone can submit a lead"
 ```
 
 Until this table exists, submissions on the live site will fail with a graceful "Something went wrong saving that" error (shown in the form, logged to the browser console) rather than silently losing data or crashing.
+
+#### Setting up the `community_submissions` table (Communitee's admin review safeguard)
+
+"+ Share Your Win" (`SubmissionModal.tsx`) inserts into a `community_submissions` table via `src/lib/community.ts`. Run this once in the Supabase SQL editor for the project above:
+
+```sql
+create table community_submissions (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  author text not null,
+  category text not null,
+  image_url text not null,
+  approved boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table community_submissions enable row level security;
+
+-- Anyone can submit a post for review, but can't read other people's
+-- pending (unapproved) posts.
+create policy "Anyone can submit a post for review"
+  on community_submissions for insert
+  to anon
+  with check (true);
+
+-- The actual safeguard: a post is only publicly visible once approved.
+create policy "Anyone can view approved posts"
+  on community_submissions for select
+  to anon
+  using (approved = true);
+```
+
+There's no self-service admin panel (in keeping with this app having no privileged backend) — an admin reviews pending rows (`approved = false`) in the Supabase Table Editor and flips `approved` to `true` to make a post go live in the `CommuniteeSection` marquee, which fetches approved submissions via `fetchApprovedSubmissions()` in `src/lib/community.ts` alongside the curated seed posts in `src/data/community.ts`. The photo/video file picker in the submission form isn't wired to real storage yet — every submission gets a placeholder image (`PLACEHOLDER_IMAGE` in `community.ts`) until that's built.
 
 ### Media assets
 
@@ -104,19 +136,21 @@ src/
   components/                # Header, Hero, RecipeCarousel, AIRecipeSection,
                               # CommuniteeSection, Footer, and their modals
                               # AppGate + SignUpGate (mandatory email gate)
-                              # NarwhalMascot + NarwhalChat + NarwhalIcon (FAB assistant)
+                              # ToqueeMascot + ToqueeChat + ToqueeIcon (FAB assistant)
   lib/
     fallbackRecipes.ts          # curated recipe library + query matching
-    fallbackChat.ts             # Pollee's guardrail + food-aware replies
+    fallbackChat.ts             # Toquee's guardrail + food-aware replies
+    nimble.ts                    # server-only Nimble Web API client (recipe-link scraping)
+    recipeParser.ts               # scraped markdown -> grocery-list + 3-step shape
+    scrapeRecipeAction.ts          # Server Action gluing nimble.ts + recipeParser.ts to the UI
     useSpeechToText.ts           # shared voice-input hook (mic button)
-    narwhalVoice.ts               # speech-synthesis wrapper (Pollee's voice)
+    toqueeVoice.ts                 # speech-synthesis wrapper (Toquee's voice)
     supabase.ts                 # browser Supabase client (this project's URL/key baked in as defaults)
-    basePath.ts                  # GitHub Pages basePath constant for raw <video>/<audio>
+    community.ts                # Communitee submission insert + approved-post fetch
+    basePath.ts                  # asset path constant for raw <video>/<audio> (empty on Vercel)
   data/
     recipes.ts                 # the 8 built-in Recipe Templates
-    community.ts                # mock Communitee UGC cards
-.github/workflows/
-  deploy.yml                    # builds the static export and deploys to GitHub Pages
+    community.ts                # curated Communitee seed posts (merged with live submissions)
 ```
 
 ## Design System
