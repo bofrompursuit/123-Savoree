@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
 import { BASE_PATH } from "@/lib/basePath";
 
-// Required for `output: "export"` — manifest.ts is a route handler under the
-// hood, and static export needs every route explicitly opted into static
-// generation.
+// The manifest never changes at runtime, so force it to prerender as a
+// static asset rather than regenerating on every request.
 export const dynamic = "force-static";
 
 // Manifest icon/start_url paths are emitted as-is into the static JSON file,
