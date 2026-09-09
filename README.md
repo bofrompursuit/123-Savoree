@@ -149,7 +149,9 @@ src/
     community.ts                # Communitee submission insert + approved-post fetch
     basePath.ts                  # asset path constant for raw <video>/<audio> (empty on Vercel)
   data/
-    recipes.ts                 # the 8 built-in Recipe Templates
+    recipes.ts                 # top carousel row's built-in Recipe Templates
+    moreRecipes.ts               # bottom carousel row (opposite scroll direction)
+    colombia.ts                  # Toquee Travels' fixed Colombia recipe + facts
     community.ts                # curated Communitee seed posts (merged with live submissions)
 ```
 

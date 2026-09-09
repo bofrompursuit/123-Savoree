@@ -1,14 +1,14 @@
 import type { Recipe } from "./recipes";
 
-// Toquee Travels' one fixed destination — kept separate from recipes.ts so
-// the main "8 Recipes, 3 Steps Each" carousel count stays accurate.
+// Toquee Travels' one fixed destination — kept separate from recipes.ts /
+// moreRecipes.ts so those carousels' contents stay independently editable.
 export const colombiaRecipe: Recipe = {
   id: "arepas-con-queso",
   title: "Arepas con Queso",
   country: "Colombia",
   flag: "🇨🇴",
   image:
-    "https://images.unsplash.com/photo-1662116765984-1cb1099cbeb1?w=800&q=80&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1745376211713-04fa3ffa3722?w=800&q=80&auto=format&fit=crop",
   ingredients: [
     "1 cup arepa flour (masarepa)",
     "1 cup warm water",
