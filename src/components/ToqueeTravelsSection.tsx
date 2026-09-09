@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { colombiaRecipe, colombiaFacts, type ColombiaFact } from "@/data/colombia";
+import { fetchRecipeImage } from "@/lib/recipeImageAction";
 import ToqueeIcon from "./ToqueeIcon";
 import RecipeModal from "./RecipeModal";
 
@@ -22,6 +23,10 @@ export default function ToqueeTravelsSection() {
   // matches — shuffled client-side post-mount for the "randomize" feel.
   const [facts, setFacts] = useState<ColombiaFact[]>(colombiaFacts);
   const [activeFact, setActiveFact] = useState<ColombiaFact>(colombiaFacts[0]);
+  // Starts on the fixed Arepas photo (matches the default active fact) and
+  // swaps once a real match comes back — keeps the old photo showing during
+  // the gap instead of flashing blank.
+  const [factImage, setFactImage] = useState<string>(colombiaRecipe.image);
   const [excited, setExcited] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -30,12 +35,18 @@ export default function ToqueeTravelsSection() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- randomizing order is a client-only affordance, not derivable during SSR
     setFacts(shuffledFacts);
     setActiveFact(shuffledFacts[0]);
+    fetchRecipeImage(shuffledFacts[0].photoQuery)
+      .then((url) => url && setFactImage(url))
+      .catch(() => {});
   }, []);
 
   function selectFact(next: ColombiaFact) {
     setActiveFact(next);
     setExcited(true);
     window.setTimeout(() => setExcited(false), EXCITED_BLINK_MS);
+    fetchRecipeImage(next.photoQuery)
+      .then((url) => url && setFactImage(url))
+      .catch(() => {});
   }
 
   function surpriseMe() {
@@ -80,8 +91,9 @@ export default function ToqueeTravelsSection() {
         <div className="mt-8 flex flex-col items-center gap-5 rounded-3xl bg-white p-6 text-savoree-ink shadow-2xl sm:flex-row sm:p-8 sm:text-left">
           <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-2xl sm:h-32 sm:w-32">
             <Image
-              src={colombiaRecipe.image}
-              alt={colombiaRecipe.title}
+              key={factImage}
+              src={factImage}
+              alt={activeFact.label}
               fill
               sizes="(max-width: 640px) 100vw, 128px"
               className="object-cover"

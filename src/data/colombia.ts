@@ -26,39 +26,50 @@ export const colombiaRecipe: Recipe = {
 export type ColombiaFact = {
   label: string;
   fact: string;
+  // A clean (no-emoji) search term for src/lib/unsplash.ts — more reliable
+  // than trying to strip emoji out of the label at render time.
+  photoQuery: string;
 };
 
 export const colombiaFacts: ColombiaFact[] = [
   {
     label: "Arepas 🫓",
     fact: "Arepas are grilled corn cakes Colombians eat with almost every meal — breakfast, lunch, and dinner!",
+    photoQuery: "colombian arepas",
   },
   {
     label: "Bandeja Paisa 🍽️",
     fact: "Bandeja Paisa piles beans, rice, meat, egg, plantain, and avocado onto one giant plate — a whole feast!",
+    photoQuery: "bandeja paisa colombian food",
   },
   {
     label: "Colombian Coffee ☕",
     fact: "Colombia's mountain farms grow some of the world's most famous coffee, thanks to rich volcanic soil.",
+    photoQuery: "colombian coffee beans farm",
   },
   {
     label: "Patacones 🍌",
     fact: "Patacones are green plantains smashed flat and fried twice, until they're crispy, salty, and golden.",
+    photoQuery: "patacones fried plantains",
   },
   {
     label: "Tropical Fruit 🥭",
     fact: "Colombia grows an incredible variety of fruit — lulo, guanábana, and maracuyá you won't find everywhere!",
+    photoQuery: "tropical fruit market colombia",
   },
   {
     label: "Buñuelos 🎄",
     fact: "Buñuelos are cheesy fried dough balls, a favorite treat during Colombian Christmas celebrations.",
+    photoQuery: "bunuelos colombian",
   },
   {
     label: "Caribbean Coast 🏖️",
     fact: "Cartagena's colorful coastal streets are famous for fresh seafood, coconut rice, and ocean breezes.",
+    photoQuery: "cartagena colombia colorful street",
   },
   {
     label: "Cumbia Music 🎶",
     fact: "Cumbia is a lively Colombian music and dance style — perfect for a kitchen dance break while you cook!",
+    photoQuery: "colombian cumbia dance festival",
   },
 ];
