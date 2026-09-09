@@ -49,12 +49,14 @@ The server-side pieces (Server Actions, secret env vars) already work here now t
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase.ts`, used by `SignUpGate.tsx` and `src/lib/community.ts` | Optional — `src/lib/supabase.ts` already has this project's URL and publishable key baked in as defaults (Supabase publishable keys are meant to ship in client code; access is governed by the table's Row Level Security policy, not by keeping this value secret), so the deployed site works without setting anything. Set these only to point a local dev checkout at a **different** Supabase project. |
 | `NIMBLE_API_KEY` | `src/lib/nimble.ts`, called from `src/lib/scrapeRecipeAction.ts` (a Server Action) | Required for the "paste a recipe link" scraping mode in [AI features](#ai-features) to work — without it, `scrapeRecipeFromUrl()` returns `null` and the UI shows a "couldn't fetch that link" message. Server-only; never prefix with `NEXT_PUBLIC_`. Set it in Vercel under Project Settings → Environment Variables (or `vercel env add NIMBLE_API_KEY`) as well as locally in `.env.local`. |
+| `UNSPLASH_ACCESS_KEY` / `UNSPLASH_SECRET_KEY` | `src/lib/unsplash.ts`, called from `src/lib/recipeImageAction.ts` (a Server Action) | Fetches a real, verified photo for AI Recipe Helper results (the fallback library and Nimble-scraped recipes have no image otherwise). Only `UNSPLASH_ACCESS_KEY` is actually used (Client-ID auth on Unsplash's read-only search API); `UNSPLASH_SECRET_KEY` is stored for possible future OAuth use but nothing calls it today. Without `UNSPLASH_ACCESS_KEY`, results simply show no photo — never a broken image. Both server-only; never prefix with `NEXT_PUBLIC_`. |
 
 ### AI features
 
 - **Recipe generation** (`src/lib/fallbackRecipes.ts`) — the default. Matches a typed-in dish name against ~20 common kid recipes (pizza, tacos, pasta, pancakes, etc.) and falls back to a generic 3-step template for anything else. Runs entirely client-side, no API key, no network call.
 - **Toquee's chat** (`src/lib/fallbackChat.ts`) — same no-key default: a keyword-based safety guardrail (redirects off-topic or high-risk kitchen questions to "ask Mom or Dad") plus food-specific answers pulled from the same recipe library.
 - **Live recipe-link scraping** (`src/lib/nimble.ts`, `src/lib/recipeParser.ts`, `src/lib/scrapeRecipeAction.ts`) — paste a URL into the "...more One Two Three Recipee" box instead of a dish name, and a Server Action calls the [Nimble Web API](https://docs.nimbleway.com) to fetch the real page (bypassing anti-bot blocks) as markdown, then heuristically parses its "Ingredients"/"Instructions" headings into the same grocery-list + 3-step shape as the fallback library. Requires `NIMBLE_API_KEY` (see above); without it, or if the scrape/parse fails, the UI shows a graceful error rather than a fabricated recipe.
+- **Recipe photos** (`src/lib/unsplash.ts`, `src/lib/recipeImageAction.ts`) — after a recipe is generated or scraped, a Server Action searches Unsplash for a real matching photo and it pops into the result card a moment later. Requires `UNSPLASH_ACCESS_KEY` (see above); without it, or if nothing matches, the card just shows no photo.
 
 #### Setting up the `leads` table
 
@@ -143,6 +145,8 @@ src/
     nimble.ts                    # server-only Nimble Web API client (recipe-link scraping)
     recipeParser.ts               # scraped markdown -> grocery-list + 3-step shape
     scrapeRecipeAction.ts          # Server Action gluing nimble.ts + recipeParser.ts to the UI
+    unsplash.ts                    # server-only Unsplash search client (recipe photos)
+    recipeImageAction.ts            # Server Action wrapping unsplash.ts for the UI
     useSpeechToText.ts           # shared voice-input hook (mic button)
     toqueeVoice.ts                 # speech-synthesis wrapper (Toquee's voice)
     supabase.ts                 # browser Supabase client (this project's URL/key baked in as defaults)

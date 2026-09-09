@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useSpeechToText } from "@/lib/useSpeechToText";
 import { getFallbackRecipe } from "@/lib/fallbackRecipes";
 import { scrapeRecipeFromUrl } from "@/lib/scrapeRecipeAction";
+import { fetchRecipeImage } from "@/lib/recipeImageAction";
 import { BASE_PATH } from "@/lib/basePath";
 import ToqueeIcon from "./ToqueeIcon";
 
@@ -28,6 +30,7 @@ export default function AIRecipeSection() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [recipe, setRecipe] = useState<RecipeResult | null>(null);
+  const [recipeImage, setRecipeImage] = useState<string | null>(null);
   const [scrapeError, setScrapeError] = useState<string | null>(null);
   const [excited, setExcited] = useState(false);
   const [guardianPhone, setGuardianPhone] = useState("");
@@ -40,12 +43,23 @@ export default function AIRecipeSection() {
     supported: speechSupported,
   } = useSpeechToText(setQuery);
 
+  // Recipe content shows immediately; its photo (if any) pops in a moment
+  // later once Unsplash responds, rather than blocking on it.
+  function applyRecipe(result: RecipeResult) {
+    setRecipe(result);
+    setRecipeImage(null);
+    fetchRecipeImage(result.recipeName)
+      .then(setRecipeImage)
+      .catch(() => setRecipeImage(null));
+  }
+
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
     setLoading(true);
     setRecipe(null);
+    setRecipeImage(null);
     setSmsStatus(null);
     setScrapeError(null);
 
@@ -53,7 +67,7 @@ export default function AIRecipeSection() {
       try {
         const scraped = await scrapeRecipeFromUrl(trimmed);
         if (scraped) {
-          setRecipe(scraped);
+          applyRecipe(scraped);
         } else {
           setScrapeError(SCRAPE_FAILURE_MESSAGE);
         }
@@ -63,7 +77,7 @@ export default function AIRecipeSection() {
       }
     } else {
       await new Promise((resolve) => setTimeout(resolve, THINKING_DELAY_MS));
-      setRecipe(getFallbackRecipe(trimmed));
+      applyRecipe(getFallbackRecipe(trimmed));
     }
 
     setLoading(false);
@@ -162,6 +176,17 @@ export default function AIRecipeSection() {
 
         {recipe && (
           <div className="mt-8 rounded-3xl bg-white p-6 shadow-md sm:p-8">
+            {recipeImage && (
+              <div className="relative -mx-6 -mt-6 mb-5 h-40 overflow-hidden rounded-t-3xl sm:-mx-8 sm:-mt-8 sm:h-48">
+                <Image
+                  src={recipeImage}
+                  alt={recipe.recipeName}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 512px"
+                  className="object-cover"
+                />
+              </div>
+            )}
             <h3 className="font-display text-2xl font-semibold">
               {recipe.recipeName}
             </h3>
