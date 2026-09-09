@@ -199,3 +199,18 @@ body {
 .animate-savoree-spin {
   animation: savoree-spin 0.6s ease-in-out 1;
 }
+
+@keyframes savoree-intro-particle {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.15) rotate(50deg) translateY(16px);
+  }
+}
+
+.animate-savoree-intro-particle {
+  animation: savoree-intro-particle 650ms ease-out forwards;
+}

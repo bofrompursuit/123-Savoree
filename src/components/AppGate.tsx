@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import SignUpGate from "./SignUpGate";
 import ToqueeMascot from "./ToqueeMascot";
+import ToqueeIntro from "./ToqueeIntro";
 
 const STORAGE_KEY = "savoree_unlocked";
 const UNLOCK_EVENT = "savoree-unlock-changed";
@@ -36,6 +37,7 @@ export default function AppGate({ children }: { children: React.ReactNode }) {
     <>
       {unlocked ? children : <SignUpGate onUnlock={handleUnlock} />}
       <ToqueeMascot landing={!unlocked} />
+      <ToqueeIntro />
     </>
   );
 }

@@ -120,6 +120,8 @@ There's no self-service admin panel (in keeping with this app having no privileg
 | `public/audio/theme.mp3` | [Mixkit — Playground Fun](https://mixkit.co/free-stock-music/instrument/ukulele/) (by Ahjay Stelino) | Mixkit Free License — free for commercial use, no attribution required |
 | `public/video/kids-baking.mp4` | [Mixkit — gingerbread cookie decorating](https://mixkit.co/free-stock-video/close-up-of-people-decorating-gingerbread-cookies-for-christmas-48876/), used behind `SignUpGate.tsx` | Mixkit Free License |
 | `public/video/burger-fries.mp4` | [Mixkit — double burger with fries](https://mixkit.co/free-stock-video/double-burger-with-fries-14010/), used behind `AIRecipeSection.tsx` | Mixkit Free License |
+| `public/video/toquee-intro.mp4` | AI-generated (from `public/images/toquee-reference.png`) draft of the welcome intro, background-removed via `rembg`/`isnet-general-use` and recomposited onto `savoree-navy`. **Not currently used** — `ToqueeIntro.tsx` now builds the same swoop/twirl/sparkle-trail/shrink beat directly in code (real `<ToqueeIcon>` SVG animated via `requestAnimationFrame`, so it's natively transparent with no matting needed). Kept here in case the video approach is revisited | Custom |
+| `public/images/toquee-reference.png` | Reference art for the mascot's look (sharpened chef-hat design), not rendered directly in the UI | Custom |
 
 Swap any of these for your own assets at any time — no code changes needed beyond the file path (`AudioPlayer.tsx`, `SignUpGate.tsx`, `AIRecipeSection.tsx`).
 
