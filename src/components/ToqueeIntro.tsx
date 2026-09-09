@@ -56,13 +56,20 @@ function clamp01(t: number) {
 type Transform = { x: number; y: number; rotate: number; scale: number; opacity: number };
 
 function computeTransform(elapsed: number, vw: number, vh: number): Transform {
-  // The orbit's radius and its starting point (angle PI = left-middle),
-  // shared across phases so swoop-in hands off to the loop, and the loop
-  // hands off to the corner-shrink, with no jump at either boundary.
-  const rx = vw * 0.38;
-  const ry = vh * 0.32;
-  const loopStartX = -rx;
+  // The loop is a spiral: it starts as a small circle at angle PI
+  // (left-of-center) and grows to a bigger one, sweeping two full
+  // revolutions plus a final extra half-turn so it lands at angle 0
+  // (right-of-center, "3 o'clock") instead of back where it started —
+  // that's the swing the corner-shrink phase then drops down-right from.
+  const rxSmall = vw * 0.06;
+  const rySmall = vh * 0.05;
+  const rxFull = vw * 0.32;
+  const ryFull = vh * 0.27;
+  const loopSweep = Math.PI * 2 * LOOP_REVS + Math.PI;
+  const loopStartX = -rxSmall;
   const loopStartY = 0;
+  const loopEndX = rxFull;
+  const loopEndY = 0;
 
   if (elapsed < SWOOP_END) {
     // Swoop from off-screen to dead center, arriving already at his
@@ -105,8 +112,11 @@ function computeTransform(elapsed: number, vw: number, vh: number): Transform {
   }
 
   if (elapsed < LOOP_END) {
+    // Spiral outward: radius grows from small to full across the loop.
     const t = clamp01((elapsed - TRANSITION_END) / LOOP_MS);
-    const theta = Math.PI + t * Math.PI * 2 * LOOP_REVS;
+    const theta = Math.PI + t * loopSweep;
+    const rx = rxSmall + (rxFull - rxSmall) * t;
+    const ry = rySmall + (ryFull - rySmall) * t;
     return {
       x: rx * Math.cos(theta),
       y: ry * Math.sin(theta),
@@ -120,8 +130,8 @@ function computeTransform(elapsed: number, vw: number, vh: number): Transform {
   const targetX = vw * 0.5 - CORNER_MARGIN;
   const targetY = vh * 0.5 - CORNER_MARGIN;
   return {
-    x: loopStartX + (targetX - loopStartX) * t,
-    y: loopStartY + (targetY - loopStartY) * t,
+    x: loopEndX + (targetX - loopEndX) * t,
+    y: loopEndY + (targetY - loopEndY) * t,
     rotate: 20 * t,
     scale: 1 - t,
     opacity: 1 - t,
